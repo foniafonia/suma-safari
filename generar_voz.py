@@ -1,14 +1,15 @@
-"""Voz de «Safari de las Sumas»: dice cada frase con Piper (Open Home Foundation), modelo es_ES-sharvard-medium,
-el mismo que usa Fönia (licencia CC BY 3.0: hay que citarla; está citada en la pantalla de inicio y en «Para la maestra»).
-Uso:  python3 generar_voz.py      (genera voz/*.mp3; hace falta ffmpeg y el modelo de ~/Developer/voz-logopedia/modelos)
+"""Voz de «Safari de las Sumas»: Ximena, de Microsoft (es-ES-XimenaNeural), con edge-tts (vía gratuita, no oficial).
+Decisión de José (11/11/2026). Solo se envían a Microsoft las frases de abajo: son genéricas, sin datos de nadie.
+Uso:  python3 generar_voz.py      (genera voz/*.mp3; hace falta edge-tts, ffmpeg y conexión)
 Las frases se leen una detrás de otra desde la página: «tres» + «más» + «dos» + «¿cuántos son?»."""
-import pathlib, subprocess, sys, tempfile, wave
+import asyncio, pathlib, subprocess, sys, tempfile
+
+import edge_tts
 
 AQUI = pathlib.Path(__file__).resolve().parent
 SALIDA = AQUI / 'voz'
-MODELO = pathlib.Path.home() / 'Developer/voz-logopedia/modelos/es_ES-sharvard-medium.onnx'
-if not MODELO.exists():
-    sys.exit('Falta el modelo de Piper: ' + str(MODELO))
+VOZ = 'es-ES-XimenaNeural'
+RITMO = '-8%'
 SALIDA.mkdir(exist_ok=True)
 
 NUM = ['cero', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez']
@@ -19,7 +20,7 @@ for i, n in enumerate(NUM):
 F.update({
     'mas': 'más', 'son': 'son', 'cuantos': '¿Cuántos son?', 'tengo': 'Tengo', 'ymedan': 'y me dan',
     'bien1': '¡Muy bien!', 'bien2': '¡Genial!', 'bien3': '¡Eso es!',
-    'casi': 'Casi. Vamos a mirarlo juntos.', 'juntos': 'Pensad juntos.',
+    'casi': 'Casi, vamos a mirarlo juntos.', 'juntos': 'Pensad juntos.',
     'sinayuda': '¡Sin ayuda! Fenomenal.', 'resuelto': '¡Lo hemos resuelto juntos!',
     'racha': '¡Racha de tres! Un punto extra.', 'llegamos': '¡Hemos llegado al campamento!',
     'empate': '¡Empate! ¡Qué buen campeonato!', 'meta': '¡La clase ha conseguido la meta entre todos!',
@@ -31,14 +32,15 @@ for i, e in enumerate(EQ):
     F['ganan%d' % i] = '¡Ganan los %s!' % e
     F['ayudan%d' % i] = 'Los %s ayudan.' % e
 
-from piper import PiperVoice, SynthesisConfig
-voz = PiperVoice.load(str(MODELO), config_path=str(MODELO) + '.json')
-cfg = SynthesisConfig(speaker_id=0, length_scale=1.12)
-with tempfile.TemporaryDirectory() as tmp:
+
+async def genera(tmp):
     for nombre, texto in F.items():
-        wav = pathlib.Path(tmp) / (nombre + '.wav')
-        with wave.open(str(wav), 'wb') as w:
-            voz.synthesize_wav(texto, w, syn_config=cfg)
-        subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', str(wav), '-af', 'silenceremove=start_periods=1:start_threshold=-45dB,areverse,silenceremove=start_periods=1:start_threshold=-45dB,areverse',
-                        '-ar', '22050', '-ac', '1', '-c:a', 'libmp3lame', '-b:a', '56k', str(SALIDA / (nombre + '.mp3'))], check=True)
+        crudo = pathlib.Path(tmp) / (nombre + '.mp3')
+        await edge_tts.Communicate(texto, VOZ, rate=RITMO).save(str(crudo))
+        subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', str(crudo), '-af',
+                        'silenceremove=start_periods=1:start_threshold=-45dB,areverse,silenceremove=start_periods=1:start_threshold=-45dB,areverse',
+                        '-ar', '24000', '-ac', '1', '-c:a', 'libmp3lame', '-b:a', '48k', str(SALIDA / (nombre + '.mp3'))], check=True)
+
+with tempfile.TemporaryDirectory() as tmp:
+    asyncio.run(genera(tmp))
 print('frases: %d · peso: %.0f KB' % (len(F), sum(f.stat().st_size for f in SALIDA.glob('*.mp3')) / 1e3))

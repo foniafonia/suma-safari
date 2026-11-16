@@ -23,13 +23,13 @@ function extra() {
     w.Audio = function (src) { this.src = src; aud.push(src); var s = this; this.play = function () { setTimeout(function () { s.onended && s.onended(); }, 3); return Promise.resolve(); }; this.pause = function () { }; };
   }).then(function (P) {
     var w = P.w, d = P.d, L = w.SumaSafari, c = L.estado.cfg;
-    ok('Marca: la portada trae el logo de Fönia, «Colmenia» y su lema, y los créditos citan Piper', d.querySelector('.portada img').getAttribute('src') === 'img/fonia.jpg' && /Colmenia/.test(txt(P, '.portada')) && /Aprendemos · Creamos · Transformamos/.test(txt(P, '.portada')) && /Piper/.test(txt(P, '.creditos')) && /Fönia/.test(txt(P, '.creditos')) && d.querySelector('#top .firma img'));
+    ok('Marca: la portada trae el logo de Fönia, «Colmenia» y su lema, y los créditos citan a Ximena (Microsoft)', d.querySelector('.portada img').getAttribute('src') === 'img/fonia.jpg' && /Colmenia/.test(txt(P, '.portada')) && /Aprendemos · Creamos · Transformamos/.test(txt(P, '.portada')) && /Ximena/.test(txt(P, '.creditos')) && /Fönia/.test(txt(P, '.creditos')) && d.querySelector('#top .firma img'));
     ok('Marca: el logo existe en disco', fs.existsSync(path.join(__dirname, 'img/fonia.jpg')));
     var temas = /var TEMAS = \[([^\]]+)\]/.exec(html)[1].match(/'([^']+)'/g).map(function (x) { return x.replace(/'/g, ''); });
     ok('Pictos propios: los ' + temas.length + ' pictogramas de la lista existen en pictos/', temas.length >= 10 && temas.every(function (t) { return fs.existsSync(path.join(__dirname, 'pictos', t + '.png')); }), temas.filter(function (t) { return !fs.existsSync(path.join(__dirname, 'pictos', t + '.png')); }).join());
     var ids = ['mas', 'son', 'cuantos', 'casi', 'juntos', 'sinayuda', 'resuelto', 'racha', 'llegamos', 'empate', 'bien1', 'bien2', 'bien3', 'clase'];
     for (var k = 0; k <= 10; k++) ids.push('n' + k); for (k = 0; k < 4; k++) ids.push('turno' + k, 'bien_eq' + k, 'ganan' + k, 'ayudan' + k);
-    ok('Voz Piper: existen los ' + ids.length + ' audios (números, frases y equipos)', ids.every(function (i) { return fs.existsSync(path.join(__dirname, 'voz', i + '.mp3')); }), ids.filter(function (i) { return !fs.existsSync(path.join(__dirname, 'voz', i + '.mp3')); }).join());
+    ok('Voz Ximena: existen los ' + ids.length + ' audios (números, frases y equipos)', ids.every(function (i) { return fs.existsSync(path.join(__dirname, 'voz', i + '.mp3')); }), ids.filter(function (i) { return !fs.existsSync(path.join(__dirname, 'voz', i + '.mp3')); }).join());
     var usados = html.match(/hablar\(\[[^\]]*\]/g) || [];
     ok('Voz: todos los audios que pide el código existen', usados.every(function (u) { return (u.match(/'([a-z_0-9]+)'/g) || []).every(function (x) { var n = x.replace(/'/g, ''); return /^(n|turno|ganan|ayudan|bien_eq)$/.test(n) || fs.existsSync(path.join(__dirname, 'voz', n + '.mp3')); }); }));
     /* nivel por defecto: empieza fácil */
@@ -62,6 +62,34 @@ function extra() {
       ok('Ajustes: el nivel «Hasta 3» y «Va subiendo (empieza fácil)» se pueden elegir', /Hasta 3/.test(d.body.textContent) && /empieza fácil/.test(d.body.textContent));
       ok('Sin errores de JavaScript en la sesión de voz', P.errs.length === 0, P.errs.join(' | '));
     });
+  });
+}
+
+/* ---------- «mis pictos en todos lados»: ningún emoji a la vista; todo sale de pictos/ ---------- */
+function extra2() {
+  var fs = require('fs'), RE = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}⭐⛶✅]/u;
+  return abre().then(function (P) {
+    var w = P.w, d = P.d, L = w.SumaSafari, c = L.estado.cfg, src = [];
+    c.sonido = false; c.voz = false;
+    function revisa(nombre) {
+      var t = ['#top', '#app', '#capa', '#diploma'].map(function (q) { return d.querySelector(q).textContent; }).join(' ').replace(/[▶➜✓−×⛶]/g, ''); var imgs = [].slice.call(d.querySelectorAll('img')).map(function (i) { return i.getAttribute('src'); });
+      imgs.forEach(function (x) { if (/^pictos\//.test(x) && src.indexOf(x) < 0) src.push(x); });
+      var malos = imgs.filter(function (x) { return /^pictos\//.test(x) && !fs.existsSync(path.join(__dirname, x)); });
+      ok('Pictos en «' + nombre + '»: ningún emoji suelto en el texto y todas las imágenes existen', !RE.test(t) && malos.length === 0, (t.match(RE) || []).join('') + ' ' + malos.join());
+    }
+    revisa('inicio'); clic(P, '[data-p=aprende]'); revisa('aprende'); clic(P, '[data-p=inicio]'); clic(P, '[data-p=maestra]'); revisa('para la maestra');
+    clic(P, '[data-p=inicio]'); clic(P, '[data-p=cfgcamp]'); revisa('ajustes del campeonato'); clic(P, '[data-p=inicio]'); clic(P, '[data-p=cfgmis]'); revisa('ajustes de la misión');
+    c.equipos = 4; c.rondas = 3; c.nivel = 'prog'; clic(P, '[data-p=inicio]'); clic(P, '[data-p=cfgcamp]'); clic(P, '[data-act=empezarCamp]');
+    revisa('campeonato (pregunta)'); clic(P, '[data-act=pista]'); revisa('campeonato (con pista)'); clic(P, '#bAyuda'); revisa('pedir ayuda'); clic(P, '[data-act=eligeAyuda][data-i="1"]');
+    var g = L.estado.g; clic(P, '#teclado button[data-n="' + g.p.sum + '"]'); revisa('acierto');
+    for (var k = 0; k < 20 && L.estado.p === 'juego'; k++) { g = L.estado.g; if (!g.resuelto) clic(P, '#teclado button[data-n="' + g.p.sum + '"]'); clic(P, '[data-act=sig]'); }
+    revisa('podio'); clic(P, '[data-act=diploma]'); revisa('diploma');
+    var dip = d.querySelector('#diploma'); ok('Diploma: sin emojis; logo de Fönia y copa', !RE.test(dip.textContent) && dip.querySelectorAll('img').length >= 3);
+    clic(P, '[data-p=inicio]'); clic(P, '[data-p=cfgmis]'); clic(P, '[data-act=empezarMis]'); revisa('misión');
+    var m = L.estado.g; for (k = 0; k < 14 && L.estado.p === 'juego'; k++) { m = L.estado.g; if (!m.resuelto) clic(P, '#teclado button[data-n="' + m.p.sum + '"]'); clic(P, '[data-act=sig]'); } revisa('fin de la misión');
+    clic(P, '[data-p=inicio]'); clic(P, '[data-p=aprende]'); ok('Signos: «Aprendemos juntos» usa signo_mas y signo_igual (en la cuenta y en las 5 formas)', d.querySelectorAll('img[src="pictos/signo_mas.png"]').length >= 3 && d.querySelectorAll('img[src="pictos/signo_igual.png"]').length >= 3);
+    var usados = src.sort(); console.log('        pictos usados (' + usados.length + '): ' + usados.map(function (x) { return x.replace(/^pictos\/|\.png$/g, ''); }).join(' '));
+    ok('Sin errores de JavaScript con los pictos', P.errs.length === 0, P.errs.join(' | '));
   });
 }
 
@@ -118,7 +146,7 @@ abre().then(function (P) {
     clic(P, '[data-act=empezarCamp]');
     var g = w.SumaSafari.estado.g;
     ok('Campeonato: 3 equipos en el marcador, turno del primero, 5 teclas (1–5) en el nivel 1', d.querySelectorAll('.marcador .eq').length === 3 && d.querySelector('.eq.act') && /Leones/.test(txt(P, '.turno')) && d.querySelectorAll('#teclado button').length === 5, 'en el nivel 1 solo 5 teclas');
-    ok('Campeonato: en el nivel 1 (apoyo «se va quitando») salen los dibujos y la suma con ❓', d.querySelectorAll('.pregunta .it').length === g.p.a + g.p.b && txt(P, '#int') === '❓');
+    ok('Campeonato: en el nivel 1 (apoyo «se va quitando») salen los dibujos y la suma con ?', d.querySelectorAll('.pregunta .it').length === g.p.a + g.p.b && txt(P, '#int') === '?');
     /* equipo 1: acierta a la primera sin pistas → 3 ⭐ */
     clic(P, '#teclado button[data-n="' + g.p.sum + '"]');
     ok('Acierto a la primera: sale el cartel de «Muy bien», +3 ⭐ para Leones', d.querySelector('#capa.on') && /Leones/.test(txt(P, '#capa h2')) && g.equipos[0].pts === 3 && g.equipos[0].racha === 1);
@@ -145,7 +173,7 @@ abre().then(function (P) {
       for (var r = 0; r < 6; r++) { var gg = w.SumaSafari.estado.g; if (w.SumaSafari.estado.p !== 'juego') break; clic(P, '#teclado button[data-n="' + gg.p.sum + '"]'); clic(P, '[data-act=sig]'); }
       ok('Tras 3 rondas × 3 equipos se llega al podio', w.SumaSafari.estado.p === 'podio' && /Podio/.test(txt(P, 'h1')), w.SumaSafari.estado.p);
       var puestos = d.querySelectorAll('.puesto').length; ok('Podio: 3 puestos con puntos, resumen para la maestra y premio de compañerismo', puestos === 3 && /Resumen para la maestra/.test(d.body.textContent) && /compañerismo/.test(d.body.textContent) && /Sumas resueltas: 9/.test(d.body.textContent));
-      ok('Racha: 3 aciertos seguidos sin ayuda dan +1 ⭐ (Leones: 3+1+3+3+1 = 11), Elefantes y Jirafas 8, y sale «Mejor racha»', g.equipos[0].mejorRacha === 3 && g.equipos.map(function (e) { return e.pts; }).join() === '11,8,8' && /Mejor racha/.test(d.body.textContent) && /Ganan los 🦁 Leones/.test(d.body.textContent), g.equipos.map(function (e) { return e.pts; }).join());
+      ok('Racha: 3 aciertos seguidos sin ayuda dan +1 ⭐ (Leones: 3+1+3+3+1 = 11), Elefantes y Jirafas 8, y sale «Mejor racha»', g.equipos[0].mejorRacha === 3 && g.equipos.map(function (e) { return e.pts; }).join() === '11,8,8' && /Mejor racha/.test(d.body.textContent) && /Ganan los\s+Leones/.test(d.body.textContent), g.equipos.map(function (e) { return e.pts; }).join());
       clic(P, '[data-act=diploma]'); return esp(150);
     }).then(function () {
       ok('Diploma: se rellena con el equipo ganador y llama a imprimir', /DIPLOMA/.test(d.querySelector('#diploma').textContent) && w.__print === 1);
@@ -160,17 +188,17 @@ abre().then(function (P) {
         clic(P, '#teclado button[data-n="' + m.p.sum + '"]'); clic(P, '[data-act=sig]');
       }
       ok('Misión: niveles 0,0,0,1,1,1,2,2,2,3,3,3 (empieza fácil y sube a lo largo del camino)', niveles.join() === '0,0,0,1,1,1,2,2,2,3,3,3', niveles.join());
-      ok('Misión: al acabar sale «Hemos llegado», 11 de 12 sin ayuda y 3 estrellas', w.SumaSafari.estado.p === 'finmis' && /11 de 12/.test(d.body.textContent) && (d.querySelector('.estr').textContent.match(/⭐/g) || []).length === 3);
+      ok('Misión: al acabar sale «Hemos llegado», 11 de 12 sin ayuda y 3 estrellas', w.SumaSafari.estado.p === 'finmis' && /11 de 12/.test(d.body.textContent) && d.querySelectorAll('.estr img[src="pictos/estrella.png"]').length === 3);
       /* ---------- Sin pistas ---------- */
       clic(P, '[data-p=inicio]'); clic(P, '[data-p=cfgcamp]'); clic(P, '[data-k=pistas][data-v="false"]'); clic(P, '[data-k=ayuda][data-v="false"]'); w.SumaSafari.estado.cfg.sonido = false; w.SumaSafari.estado.cfg.voz = false; clic(P, '[data-act=empezarCamp]');
       ok('Sin pistas ni ayuda: no hay botones de pista ni de ayuda', !d.querySelector('[data-act=pista]') && !d.querySelector('#bAyuda') && /sin pistas/i.test(txt(P, '#panelPista')));
-      var g3 = w.SumaSafari.estado.g, mal3 = g3.p.sum === 10 ? 9 : g3.p.sum + 1; clic(P, '#teclado button[data-n="' + mal3 + '"]'); clic(P, '#teclado button[data-n="' + g3.p.sum + '"]');
+      var g3 = w.SumaSafari.estado.g, mal3 = g3.p.sum === 5 ? 4 : g3.p.sum + 1; clic(P, '#teclado button[data-n="' + mal3 + '"]'); clic(P, '#teclado button[data-n="' + g3.p.sum + '"]');
       ok('Sin pistas: un fallo baja la puntuación igualmente (2 ⭐)', g3.equipos[0].pts === 2, g3.equipos[0].pts);
       /* teclado físico */
       clic(P, '[data-act=sig]'); var g4 = w.SumaSafari.estado.g; var tecla = g4.p.sum === 10 ? '0' : String(g4.p.sum);
       d.dispatchEvent(new w.KeyboardEvent('keydown', { key: tecla, bubbles: true })); ok('Teclado: la tecla del número responde', g4.resuelto === true);
       ok('Sin errores de JavaScript en toda la sesión', P.errs.length === 0, P.errs.join(' | '));
-      return extra().then(function () { console.log(fallos ? '\nHAY ' + fallos + ' FALLOS' : '\nTodo bien'); process.exit(fallos ? 1 : 0); });
+      return extra().then(extra2).then(function () { console.log(fallos ? '\nHAY ' + fallos + ' FALLOS' : '\nTodo bien'); process.exit(fallos ? 1 : 0); });
     });
   });
 }).catch(function (e) { console.log('FALLO  ' + (e && e.stack || e)); process.exit(1); });
