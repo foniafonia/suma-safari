@@ -381,12 +381,13 @@ function confeti(n) {
 }
 /* Pictogramas propios de Fönia (carpeta pictos/): cada emoji del texto se cambia por su pictograma al pintarlo */
 var EMO = {
-  '🦁': 'leon', '🐘': 'elefante', '🦒': 'jirafa', '🐒': 'mono', '⭐': 'estrella', '🌟': 'estrella', '🎉': 'estrella', '🏆': 'copa', '🥇': 'medalla',
-  '💡': 'mirar', '🔍': 'mirar', '🤝': 'ayuda', '🖐️': 'mano_abierta', '🙋': 'mano_abierta', '🥢': 'palo', '🐸': 'rana', '🍎': 'contar',
-  '🚙': 'coche', '⛺': 'casa', '🏠': 'casa', '🦉': 'pensar', '🧠': 'cabeza', '🐝': 'miel', '🎓': 'libro', '🧑‍🏫': 'maestra',
-  '🔊': 'oir', '🗣️': 'hablar', '🔈': 'escuchar', '🎲': 'otra', '🔁': 'repetir', '🖨️': 'papel', '📋': 'lapiz', '🔥': 'fuego',
-  '⏹': 'parar', '📷': 'camara', '🤏': 'coger', '▶': 'jugar', '➜': 'derecha', '✓': 'bien', '⛶': 'pizarra', '▦': 'caja', '👁': 'ojo',
-  '🐣': 'pollito', '🌴': 'arbol', '🌾': 'flor', '🌋': 'fuego', '📈': 'camino', '🎈': 'globo'
+  /* 16/11: los que faltaban, ya hechos por el banco (lote S). Trofeo, apagar y los números 6, 7, 9 y 10 se están rehaciendo: siguen con el más cercano */
+  '🦁': 'leon', '🐘': 'elefante', '🦒': 'jirafa', '🐒': 'mono', '⭐': 'estrella', '🌟': 'estrella', '🎉': 'aplauso', '🏆': 'copa', '🥇': 'medalla',
+  '💡': 'pista', '🔍': 'mirar', '🤝': 'ayuda', '🖐️': 'mano_abierta', '🙋': 'mano_abierta', '🥢': 'palitos', '🐸': 'rana', '🍎': 'contar',
+  '🚙': 'todoterreno', '⛺': 'campamento', '🏠': 'casa', '🦉': 'buho', '🧠': 'cerebro', '🐝': 'abeja', '🎓': 'libro', '🧑‍🏫': 'maestra',
+  '🔊': 'altavoz', '🗣️': 'hablar', '🔈': 'escuchar', '🎲': 'dado', '🔁': 'repetir', '🖨️': 'imprimir', '📋': 'lapiz', '🔥': 'fuego',
+  '⏹': 'parar', '📷': 'camara', '🤏': 'pinza', '▶': 'jugar', '➜': 'siguiente', '✓': 'bien', '⛶': 'pantalla_completa', '▦': 'marco_de_10', '👁': 'ojo',
+  '🐣': 'pollito', '🌴': 'selva', '🌾': 'sabana', '🌋': 'volcan', '📈': 'camino', '🎈': 'globo'
 };
 var EMO_RE = new RegExp('(' + Object.keys(EMO).sort(function (a, b) { return b.length - a.length; }).map(function (k) { return k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('|') + ')\uFE0F?', 'g');
 function pictea(h) { return String(h).replace(EMO_RE, function (m, k) { return '<img class="ico" src="pictos/' + EMO[k] + '.png" alt="" draggable="false">'; }); }
@@ -875,7 +876,7 @@ function pJunta() {
   h += '<div id="camSlot" class="camMini">' + '</div>';
   h += '<div class="mesa" id="mesa"><div class="zona zA" id="zA"><div class="tit">' + ico('izquierda') + ' izquierda</div><div class="cuenta" id="cA">0</div></div><div class="zona zB" id="zB"><div class="tit">' + ico('derecha') + ' derecha</div><div class="cuenta" id="cB">0</div></div><div class="zona zP" id="zP"></div>';
   j.items.forEach(function (it) { h += '<div class="obj" data-id="' + it.id + '" style="left:' + it.x + '%;top:' + it.y + '%">' + pic(j.tema) + '</div>'; });
-  h += '<div class="cursorMano" id="curM"></div></div><div id="jMsg" class="msg"></div><div class="acciones"><button class="btn verde" data-act="jjuntar" id="bJ">🤝 Juntar</button>' +
+  h += '<div class="cursorMano" id="curM"></div></div><div id="jMsg" class="msg"></div><div class="acciones"><button class="btn verde" data-act="jjuntar" id="bJ"><img class="ico" src="pictos/juntar.png" alt="" draggable="false"> Juntar</button>' +
     '<button class="btn azul" data-act="' + (on ? 'jmanoOff' : 'jmano') + '">' + (on ? '⏹ Apagar la cámara' : '📷 Mover con la mano') + '</button>' +
     '<button class="btn" data-act="jsig" id="bJsig" style="display:none">Siguiente ➜</button></div><p class="creditos">Arrastra con el dedo o el ratón. Con la cámara: junta el pulgar y el índice (pinza) para coger un dibujo y ábrelos para soltarlo.</p></section>';
   setTimeout(function () { if (S.p === 'junta') { jPinta(); hablar(['pon', 'n' + p.a, 'izq', 'n' + p.b, 'der'], 'Pon ' + NUM[p.a] + ' a la izquierda, y ' + NUM[p.b] + ' a la derecha.'); } }, 0);
