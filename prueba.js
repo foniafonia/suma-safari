@@ -6,9 +6,10 @@ var JD = require('/Users/joseaserraf/Developer/ACADEMIA-MEMBRESIA-LOGOPED-IA-vis
 
 function abre(pre) {
   var errs = [], vc = new VC(); vc.on('jsdomError', function (e) { errs.push(String(e.message).slice(0, 200)); });
-  return JSDOM.fromFile(path.join(__dirname, 'index.html'), { url: 'http://localhost/', runScripts: 'dangerously', pretendToBeVisual: true, virtualConsole: vc,
+  var RAIZ = __dirname, RECURSOS = { interceptors: [JD.requestInterceptor(function (req) { var u = req.url; if (u.indexOf('http://localhost/') !== 0) return new Response('', { status: 404 }); var f = path.join(RAIZ, decodeURIComponent(u.slice(17).split(/[?#]/)[0])); if (!require('fs').existsSync(f) || require('fs').statSync(f).isDirectory()) return new Response('', { status: 404 }); return new Response(require('fs').readFileSync(f), { status: 200, headers: { 'Content-Type': /\.js$/.test(f) ? 'application/javascript' : 'application/octet-stream' } }); })] };
+  return JSDOM.fromFile(path.join(__dirname, 'index.html'), { url: 'http://localhost/', runScripts: 'dangerously', resources: RECURSOS, pretendToBeVisual: true, virtualConsole: vc,
     beforeParse: function (w) { if (pre) pre(w); w.matchMedia = function () { return { matches: false, addListener: function () { }, addEventListener: function () { } }; }; w.HTMLElement.prototype.scrollIntoView = function () { }; w.scrollTo = function () { }; w.print = function () { w.__print = (w.__print || 0) + 1; }; }
-  }).then(function (dom) { return { w: dom.window, d: dom.window.document, errs: errs }; });
+  }).then(function (dom) { var w = dom.window; return new Promise(function (r) { if (w.document.readyState === 'complete') r(); else w.addEventListener('load', function () { r(); }); }).then(function () { return { w: w, d: w.document, errs: errs }; }); });
 }
 var esp = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
 function clic(P, sel) { var e = P.d.querySelector(sel); if (!e) throw new Error('no hay ' + sel); e.click(); }
@@ -93,6 +94,186 @@ function extra2() {
   });
 }
 
+/* ---------- cámara, dedos y mover objetos (cámara y detector falsos; manos sintéticas) ---------- */
+function extra3() {
+  var mano = require('./sinteticas.js').mano, fs = require('fs'), RE = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}⭐⛶✅▶➜✓]/u;
+  var llamadas = 0, paradas = 0, aud = [];
+  function abreCam(conCamara) {
+    return abre(function (w) {
+      w.HTMLMediaElement.prototype.play = function () { return Promise.resolve(); };
+      Object.defineProperty(w.HTMLMediaElement.prototype, 'readyState', { get: function () { return 4; } });
+      w.HTMLCanvasElement.prototype.getContext = function () { return null; };
+      w.Audio = function (src) { var s0 = this; aud.push(src); this.play = function () { setTimeout(function () { s0.onended && s0.onended(); }, 2); return Promise.resolve(); }; this.pause = function () { }; };
+      if (conCamara) Object.defineProperty(w.navigator, 'mediaDevices', { configurable: true, value: { getUserMedia: function () { llamadas++; return Promise.resolve({ getTracks: function () { return [{ stop: function () { paradas++; } }]; } }); } } });
+    }).then(function (P) {
+      var M = P.w.SumaManos; P.w.__res = { landmarks: [] }; M.CAM.inyect = function () { return P.w.__res; }; M.CFG.estableN = 3; M.CFG.fps = 200;
+      P.w.SumaSafari.estado.cfg.sonido = false; P.w.SumaSafari.estado.cfg.voz = true; P.M = M; return P;
+    });
+  }
+  function acepta(P) { var b = P.d.querySelector('[data-act=camSi]'); if (b) b.click(); }
+  var mano1 = function (n, o) { var e = [0, 0, 0, 0, 0]; for (var i = 0; i < n; i++) e[i] = 1; return mano(e, o); };
+  function cuantasManos(n) { return n <= 5 ? [mano1(n)] : [mano1(5, { x: 0.3 }), mano1(n - 5, { x: 0.7 })]; }
+  function hay(P, sel) { return !!P.d.querySelector(sel); }
+  function sinEmoji(P, nombre) { var t = ['#top', '#app', '#capa'].map(function (q) { return P.d.querySelector(q).textContent; }).join(' '); ok('Pictos en «' + nombre + '»: ningún emoji ni símbolo suelto', !RE.test(t), (t.match(RE) || []).join('')); }
+
+  return abreCam(true).then(function (P) {
+    var w = P.w, d = P.d, L = w.SumaSafari, M = P.M;
+    clic(P, '[data-p=dedos]');
+    ok('Mis dedos: 3 modos (mis manos, enséñame el número, suma con las manos) y la cámara empieza apagada', d.querySelectorAll('[data-act=dmodo]').length === 3 && /apagada/.test(txt(P, '.camVacio')) && hay(P, '[data-act=camOn]') && !M.CAM.activa);
+    sinEmoji(P, 'mis dedos');
+    clic(P, '[data-act=camOn]');
+    ok('Cámara: antes de encenderla pide permiso y dice que no se graba, no se guarda y no se envía nada', d.querySelector('#capa.on') && /No se graba, no se guarda y no se envía nada/.test(txt(P, '#capa')) && llamadas === 0);
+    clic(P, '[data-act=camNo]'); ok('Cámara: con «Ahora no» no se enciende nada', !d.querySelector('#capa.on') && llamadas === 0 && !M.CAM.activa);
+    clic(P, '[data-act=camOn]'); clic(P, '[data-act=camSi]');
+    return esp(150).then(function () {
+      ok('Cámara: tras aceptar se pide la cámara una vez y se ve el vídeo con su lienzo y «no se graba nada»', llamadas === 1 && M.CAM.activa && d.querySelector('#camSlot #camBox video') && d.querySelector('#camBox canvas') && /no se graba nada/.test(txt(P, '#camBox')) && hay(P, '[data-act=camOff]'));
+      /* modo libre */
+      w.__res = { landmarks: cuantasManos(4) }; return esp(150);
+    }).then(function () {
+      ok('Mis manos: ve 4 dedos y lo dice en grande, con la voz de Ximena («cuatro»)', txt(P, '#dN') === '4' && txt(P, '#camNum') === '4' && aud.indexOf('voz/n4.mp3') >= 0, txt(P, '#dN') + ' ' + aud.join());
+      w.__res = { landmarks: cuantasManos(7) }; return esp(150);
+    }).then(function () {
+      ok('Mis manos: con las dos manos suma los dedos (5 + 2 = 7)', txt(P, '#dN') === '7');
+      w.__res = { landmarks: [] }; return esp(100);
+    }).then(function () {
+      ok('Mis manos: sin manos, guion', txt(P, '#dN') === '–' || txt(P, '#dN') === '-');
+      /* enséñame el número */
+      clic(P, '[data-act=dmodo][data-m=numero]'); var D = L.estado.d, n = D.obj;
+      ok('Enséñame el número: sale el número a imitar (de 1 a 3 en la primera ronda) y la cámara sigue encendida', n >= 1 && n <= 3 && /Enséñame el\s*\d/.test(txt(P, '#dPanel')) && M.CAM.activa && d.querySelector('#camSlot #camBox'));
+      w.__res = { landmarks: cuantasManos(n + 1) }; return esp(150).then(function () {
+        ok('Enséñame el número: con otro número NO cuenta (gemelo) y dice lo que ve', D.hecho === false && D.estrellas === 0 && /Veo/.test(txt(P, '#dVeo')));
+        w.__res = { landmarks: cuantasManos(n) }; return esp(200);
+      }).then(function () {
+        ok('Enséñame el número: con el número bien, se mantiene 3 fotogramas y acierta: ⭐, aparece «Siguiente» y suena «lo has conseguido»', D.hecho === true && D.estrellas === 1 && d.querySelector('#bDsig').style.display !== 'none' && aud.indexOf('voz/conseguido.mp3') >= 0 && txt(P, '#dRes') === String(n));
+        clic(P, '[data-act=dsig]'); ok('Siguiente: ronda 2 de 6 con otro número', D.ronda === 1 && D.hecho === false && /Ronda 2 de 6/.test(txt(P, '#dPanel')));
+        /* suma con las manos */
+        clic(P, '[data-act=dmodo][data-m=suma]'); var o = D.obj;
+        ok('Suma con las manos: sale «a + b» con los dedos de cada mano (cada uno ≤ 5)', o.a >= 1 && o.b >= 1 && o.a <= 5 && o.b <= 5 && /Una mano con \d dedos y la otra con \d/.test(txt(P, '#dPanel')), o.a + '+' + o.b);
+        w.__res = { landmarks: [mano1(o.a)] }; return esp(150).then(function () {
+          ok('Suma con las manos: con una sola mano no cuenta y pide la otra («Necesito ver las dos manos»)', D.hecho === false && /Necesito ver las dos manos/.test(txt(P, '#dVeo')) && aud.indexOf('voz/dosmanos.mp3') >= 0);
+          var mal = [mano1((o.a % 5) + 1, { x: 0.3 }), mano1(o.b, { x: 0.7 })];
+          w.__res = { landmarks: mal }; return esp(150);
+        }).then(function () {
+          ok('Suma con las manos: dos manos con otros números NO cuenta (gemelo)', D.hecho === false);
+          w.__res = { landmarks: [mano1(o.b, { x: 0.3 }), mano1(o.a, { x: 0.7 })] }; return esp(200);
+        }).then(function () {
+          ok('Suma con las manos: vale en cualquier orden (b en la izquierda, a en la derecha): ⭐ y se muestra «a + b = suma» con los signos del banco', D.hecho === true && D.estrellas === 1 && d.querySelectorAll('#dRes img[src="pictos/signo_mas.png"]').length === 1 && d.querySelectorAll('#dRes img[src="pictos/signo_igual.png"]').length === 1 && new RegExp('^' + o.a + '\\s*' + o.b + '\\s*' + o.sum + '$').test(txt(P, '#dRes').replace(/\s+/g, ' ').replace(/(\d) (\d)/g, '$1 $2').replace(/\s/g, '')) || /\d\s*\d\s*\d/.test(txt(P, '#dRes')), txt(P, '#dRes'));
+          sinEmoji(P, 'mis dedos (suma, acertado)');
+        });
+      });
+    }).then(function () {
+      var D = L.estado.d; for (var g2 = 0; g2 < 8 && !D.fin; g2++) { /* pasa las rondas que falten */ D.hecho = true; D.estrellas++; clic(P, '[data-act=dsig]') ; }
+      ok('Mis dedos: al acabar las 6 rondas sale el resumen con estrellas y «Otra vez»', D.fin === true && hay(P, '[data-act=dotra]') && /conseguidos/.test(txt(P, '#dPanel')));
+      sinEmoji(P, 'mis dedos (final)');
+      clic(P, '[data-p=inicio]');
+      ok('Salir de la pantalla apaga la cámara: se paran las pistas de vídeo y desaparece el vídeo', M.CAM.activa === false && paradas === 1 && !d.querySelector('#camBox'), 'paradas=' + paradas);
+      /* ---------- responder con los dedos en el campeonato ---------- */
+      var c = L.estado.cfg; c.equipos = 3; c.rondas = 3; c.nivel = '1'; c.pistas = true; c.ayuda = true;
+      clic(P, '[data-p=cfgcamp]'); clic(P, '[data-act=empezarCamp]'); var g = L.estado.g;
+      ok('Juego: hay botón «Responder con los dedos»', hay(P, '#bCamJ') && /Responder con los dedos/.test(txt(P, '#bCamJ')));
+      w.__res = { landmarks: cuantasManos(2) }; clic(P, '#bCamJ'); acepta(P);
+      return esp(150).then(function () {
+        ok('Juego: si al encender la cámara ya hay manos delante, NO se toman como respuesta hasta bajarlas una vez', g.fallos === 0 && !g.resuelto && M.CAM.bloq === 'inicio', 'fallos=' + g.fallos);
+        w.__res = { landmarks: [] }; return esp(150);
+      }).then(function () {
+        ok('Juego: la cámara se monta en el hueco de la pregunta y el botón pasa a «Apagar»', M.CAM.activa && d.querySelector('#camSlot #camBox') && /Apagar la cámara/.test(txt(P, '#bCamJ')) && g.cam === true);
+        var mal = g.p.sum === 5 ? 4 : g.p.sum + 1; w.__res = { landmarks: cuantasManos(mal) }; return esp(200).then(function () {
+          ok('Juego: enseñar un número equivocado cuenta como fallo y tacha la tecla', g.fallos === 1 && d.querySelector('#teclado button[data-n="' + mal + '"]').classList.contains('mal') && !g.resuelto, 'fallos=' + g.fallos);
+          return esp(300);
+        }).then(function () {
+          ok('Juego: si sigue enseñando lo mismo NO se repite el fallo (hay que cambiar o bajar las manos)', g.fallos === 1, 'fallos=' + g.fallos);
+          w.__res = { landmarks: cuantasManos(g.p.sum) }; return esp(250);
+        }).then(function () {
+          ok('Juego: enseñar el número bien responde solo: acierta y salen las estrellas', g.resuelto === true && d.querySelector('#capa.on') && g.equipos[0].pts >= 1, 'pts=' + g.equipos[0].pts);
+          var pts0 = g.equipos[0].pts; clic(P, '[data-act=sig]');
+          ok('Juego: en la pregunta siguiente la cámara sigue encendida y montada', M.CAM.activa && d.querySelector('#camSlot #camBox') && paradas === 1);
+          return esp(300).then(function () {
+            ok('Juego: con las manos igual que antes, la pregunta nueva NO se responde sola (se espera a que cambie el número)', L.estado.g.resuelto === false, String(L.estado.g.resuelto));
+            w.__res = { landmarks: [] }; return esp(120);
+          }).then(function () {
+            var g3 = L.estado.g; w.__res = { landmarks: cuantasManos(g3.p.sum) }; return esp(250).then(function () { ok('Juego: tras bajar las manos y enseñar el número bien, responde', g3.resuelto === true); });
+          });
+        });
+      });
+    }).then(function () {
+      clic(P, '[data-act=sig]'); /* sigue la partida con el siguiente equipo */
+      clic(P, '[data-p=inicio]');
+      ok('Juego: al salir al inicio se apaga la cámara (2.ª parada de pistas)', M.CAM.activa === false && paradas === 2 && !d.querySelector('#camBox'), 'paradas=' + paradas);
+      /* ---------- mover y juntar ---------- */
+      clic(P, '[data-p=junta]'); var J = L.estado.j;
+      var mesa = d.querySelector('#mesa'); mesa.getBoundingClientRect = function () { return { left: 0, top: 0, width: 1000, height: 600 }; };
+      ok('Mover y juntar: pide «Pon a la izquierda y b a la derecha», con 2 zonas, una pila de dibujos (suma + 2) y un botón «Juntar»', d.querySelectorAll('.obj').length === J.p.sum + 2 && hay(P, '#zA') && hay(P, '#zB') && hay(P, '#zP') && hay(P, '#bJ') && new RegExp('Pon\\s*' + J.p.a + '\\s*a la izquierda').test(txt(P, '.consigna')), J.p.a + '+' + J.p.b);
+      sinEmoji(P, 'mover y juntar');
+      ok('Mover y juntar: los dibujos son pictos del banco de Fönia', /^pictos\/[a-z]+\.png$/.test(d.querySelector('.obj img').getAttribute('src')) && fs.existsSync(path.join(__dirname, d.querySelector('.obj img').getAttribute('src'))));
+      var ev = function (tipo, x, y, el) { (el || d).dispatchEvent(new w.MouseEvent(tipo, { clientX: x * 10, clientY: y * 6, bubbles: true })); };
+      var mueve = function (id, x, y) { var it = J.items[id], el = d.querySelector('.obj[data-id="' + id + '"]'); ev('pointerdown', it.x, it.y, el); ev('pointermove', x, y); ev('pointerup', x, y); };
+      mueve(0, 20, 25);
+      ok('Arrastrar: al soltar un dibujo dentro de la zona izquierda cuenta 1 allí y lo dice (voz «uno»)', J.items[0].z === 'A' && txt(P, '#cA') === '1' && aud.slice(-1)[0] === 'voz/n1.mp3', J.items[0].z + ' ' + txt(P, '#cA') + ' ' + aud.slice(-1)[0]);
+      mueve(1, 70, 25); ok('Arrastrar: otro a la derecha cuenta en la zona derecha', J.items[1].z === 'B' && txt(P, '#cB') === '1');
+      mueve(2, 50, 90); ok('Arrastrar: soltar fuera de las zonas lo deja en la pila', J.items[2].z === 'P');
+      mueve(0, 50, 90); ok('Arrastrar: sacar uno de la zona lo devuelve a la pila y baja la cuenta', J.items[0].z === 'P' && txt(P, '#cA') === '0');
+      clic(P, '[data-act=jjuntar]'); ok('Juntar con cantidades equivocadas: no se junta, explica cuántos hay y qué hace falta (sin riñas)', J.hecho === false && J.errores === 1 && /Ahora hay \d a la izquierda y \d a la derecha/.test(txt(P, '#jMsg')) && aud.slice(-1)[0] === 'voz/cuentalado.mp3');
+      /* ahora bien: a a la izquierda y b a la derecha */
+      var libres = J.items.filter(function (it) { return it.z === 'P'; }).map(function (it) { return it.id; }), usados = 0;
+      J.items.filter(function (it) { return it.z === 'B'; }).forEach(function (it) { mueve(it.id, 50, 90); });
+      libres = J.items.filter(function (it) { return it.z === 'P'; }).map(function (it) { return it.id; });
+      for (var i = 0; i < J.p.a; i++) mueve(libres[usados++], 15 + 3 * i, 20 + 3 * i);
+      for (i = 0; i < J.p.b; i++) mueve(libres[usados++], 65 + 3 * i, 20 + 3 * i);
+      ok('Arrastrar: ' + J.p.a + ' a la izquierda y ' + J.p.b + ' a la derecha, los dos contadores se ponen en verde', txt(P, '#cA') === String(J.p.a) && txt(P, '#cB') === String(J.p.b) && d.querySelector('#cA').classList.contains('ok') && d.querySelector('#cB').classList.contains('ok'));
+      clic(P, '[data-act=jjuntar]');
+      ok('Juntar bien: los dibujos pasan al centro y la voz dice «¡Ahora los juntamos!»', J.hecho === true && d.querySelector('#mesa').classList.contains('junta') && J.items.filter(function (it) { return it.z === 'C'; }).length === J.p.sum && aud.slice(-1)[0] === 'voz/juntamos.mp3');
+      return esp((J.p.sum * 650) + 1800).then(function () {
+        ok('Juntar: cuenta los dibujos uno a uno y al final enseña «a + b = suma» con los signos del banco y el botón «Siguiente»', d.querySelectorAll('#jRes img[src="pictos/signo_mas.png"]').length === 1 && d.querySelector('#bJsig').style.display !== 'none' && J.estrellas === 1 && aud.indexOf('voz/conseguido.mp3') >= 0, txt(P, '#jRes'));
+        sinEmoji(P, 'mover y juntar (resuelto)');
+        J.ronda = J.rondas - 1; clic(P, '[data-act=jsig]');
+      });
+    }).then(function () {
+      ok('Mover y juntar: al terminar sale el resumen con estrellas y «Otra vez»', L.estado.p === 'finjunta' && hay(P, '[data-act=jotra]'));
+      sinEmoji(P, 'fin de mover y juntar');
+      /* ---------- la mano como ratón: pinza para coger ---------- */
+      clic(P, '[data-act=jotra]'); var J2 = L.estado.j, mesa2 = d.querySelector('#mesa'); mesa2.getBoundingClientRect = function () { return { left: 0, top: 0, width: 1000, height: 600 }; };
+      clic(P, '[data-act=jmano]'); acepta(P);
+      return esp(150).then(function () {
+        ok('Mover con la mano: la cámara se enciende en la pantalla de mover', M.CAM.activa && d.querySelector('#camSlot #camBox') && /Apagar la cámara/.test(txt(P, '.acciones')));
+        var it = J2.items[0], pt0 = { x: it.x, y: it.y };
+        function pinzaEn(X, Y, cerrada) { var q = { x: 1 - (0.1 + X / 100 * 0.8), y: 0.1 + Y / 100 * 0.8 }, m = mano([0, 1, 0, 0, 0]); var sep = cerrada ? 0.012 : 0.25; m[8] = { x: q.x - sep / 2, y: q.y, z: 0 }; m[4] = { x: q.x + sep / 2, y: q.y, z: 0 }; return { landmarks: [m] }; }
+        w.__res = pinzaEn(pt0.x, pt0.y, false); return esp(100).then(function () {
+          ok('Mano: se ve el cursor morado en la mesa mientras hay una mano', d.querySelector('#curM').style.display === 'block' && !d.querySelector('#curM').classList.contains('pinza'));
+          w.__res = pinzaEn(pt0.x, pt0.y, true); return esp(100);
+        }).then(function () {
+          ok('Mano: al cerrar la pinza sobre un dibujo lo coge (se levanta y el cursor se rellena)', J2.arr === 0 && d.querySelector('#curM').classList.contains('pinza') && d.querySelector('.obj[data-id="0"]').classList.contains('arr'), 'arr=' + J2.arr);
+          w.__res = pinzaEn(25, 28, true); return esp(100);
+        }).then(function () {
+          ok('Mano: moviendo la pinza arrastra el dibujo hasta la zona izquierda', J2.items[0].x > 15 && J2.items[0].x < 35 && J2.items[0].y > 20 && J2.items[0].y < 35, J2.items[0].x.toFixed(0) + ',' + J2.items[0].y.toFixed(0));
+          w.__res = pinzaEn(25, 28, false); return esp(100);
+        }).then(function () {
+          ok('Mano: al abrir los dedos suelta el dibujo dentro de la zona izquierda (cuenta 1 y lo dice)', J2.arr === null && J2.items[0].z === 'A' && txt(P, '#cA') === '1');
+          w.__res = pinzaEn(80, 20, false); return esp(100);
+        }).then(function () {
+          /* abrir la mano lejos de un dibujo no coge nada */
+          w.__res = pinzaEn(90, 40, true); return esp(100);
+        }).then(function () {
+          ok('Mano: cerrar la pinza donde no hay ningún dibujo no coge nada (gemelo)', J2.arr === null);
+          w.__res = { landmarks: [] }; return esp(100);
+        }).then(function () {
+          ok('Mano: sin mano el cursor desaparece', d.querySelector('#curM').style.display === 'none');
+          sinEmoji(P, 'mover con la mano');
+          clic(P, '[data-act=jmanoOff]'); ok('Apagar la cámara desde mover y juntar la para', M.CAM.activa === false && paradas === 3, 'paradas=' + paradas);
+        });
+      });
+    }).then(function () {
+      ok('Sin errores de JavaScript con cámara, dedos y mover objetos', P.errs.length === 0, P.errs.join(' | '));
+      return abreCam(false);
+    }).then(function (P2) {
+      clic(P2, '[data-p=dedos]'); clic(P2, '[data-act=camOn]'); clic(P2, '[data-act=camSi]'); return esp(120).then(function () {
+        ok('Sin cámara en el aparato: lo dice con claridad y no se rompe nada', /no tiene cámara/.test(txt(P2, '#camAviso')) && !P2.M.CAM.activa && P2.errs.length === 0, txt(P2, '#camAviso'));
+        clic(P2, '[data-act=dmodo][data-m=numero]'); ok('Sin cámara: el modo «enséñame el número» se puede mirar igualmente', /Enséñame el\s*\d/.test(txt(P2, '#dPanel')));
+      });
+    });
+  });
+}
+function S_p(L) { return L.estado.p; }
+
 abre().then(function (P) {
   var L = P.w.SumaSafari, w = P.w, d = P.d;
   /* ---------- lógica ---------- */
@@ -113,7 +294,7 @@ abre().then(function (P) {
   ok('estrellasMision: 3 estrellas con ≥ 75 %, 2 con ≥ 50 %, 1 en otro caso', L.estrellasMision(9, 12) === 3 && L.estrellasMision(6, 12) === 2 && L.estrellasMision(1, 12) === 1);
 
   /* ---------- pantallas ---------- */
-  ok('Inicio: título y 4 tarjetas', /Safari de las Sumas/.test(txt(P, 'h1')) && d.querySelectorAll('.menu .card').length === 4);
+  ok('Inicio: título y 6 tarjetas (aprende, dedos, mover, campeonato, misión, maestra)', /Safari de las Sumas/.test(txt(P, 'h1')) && d.querySelectorAll('.menu .card').length === 6);
 
   /* Aprendemos juntos */
   clic(P, '[data-p=aprende]');
@@ -198,7 +379,7 @@ abre().then(function (P) {
       clic(P, '[data-act=sig]'); var g4 = w.SumaSafari.estado.g; var tecla = g4.p.sum === 10 ? '0' : String(g4.p.sum);
       d.dispatchEvent(new w.KeyboardEvent('keydown', { key: tecla, bubbles: true })); ok('Teclado: la tecla del número responde', g4.resuelto === true);
       ok('Sin errores de JavaScript en toda la sesión', P.errs.length === 0, P.errs.join(' | '));
-      return extra().then(extra2).then(function () { console.log(fallos ? '\nHAY ' + fallos + ' FALLOS' : '\nTodo bien'); process.exit(fallos ? 1 : 0); });
+      return extra().then(extra2).then(extra3).then(function () { console.log(fallos ? '\nHAY ' + fallos + ' FALLOS' : '\nTodo bien'); process.exit(fallos ? 1 : 0); });
     });
   });
 }).catch(function (e) { console.log('FALLO  ' + (e && e.stack || e)); process.exit(1); });

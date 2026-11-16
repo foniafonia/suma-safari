@@ -40,6 +40,54 @@ button:focus-visible,a:focus-visible{outline:4px solid #7048e8;outline-offset:3p
 .btn .ico,.chip .ico,.premio .ico,.pill .ico{height:1.25em;width:1.25em;vertical-align:-.28em}
 .parada .ico{height:72%;width:72%;vertical-align:middle}
 .parada.meta .ico{height:80%;width:80%}
+
+.mini .sig{height:58%;width:58%;vertical-align:middle}
+.card.c5{background:#d0ebff}.card.c6{background:#ffe8cc}
+/* cámara */
+.camaraBox{position:relative;width:100%;background:#1c1f2b;border-radius:var(--r);overflow:hidden;box-shadow:var(--sombra);aspect-ratio:4/3}
+.camaraBox video{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;transform:scaleX(-1)}
+.camaraBox canvas{position:absolute;inset:0;width:100%;height:100%}
+.camNum{position:absolute;right:12px;top:4px;font-size:clamp(40px,7vw,88px);font-weight:900;color:#fff;text-shadow:0 3px 0 #2b2d42,0 0 14px rgba(0,0,0,.6)}
+.camProg{position:absolute;left:0;right:0;bottom:0;height:12px;background:rgba(255,255,255,.25)}
+.camProg i{display:block;height:100%;width:0;background:var(--ok);transition:width .1s}
+.camEstado{position:absolute;left:8px;bottom:18px;font-size:clamp(11px,1.4vw,15px);font-weight:800;color:#fff;background:rgba(0,0,0,.55);padding:2px 10px;border-radius:99px}
+.camEstado .punto{display:inline-block;width:.7em;height:.7em;border-radius:50%;background:#ff4d4d;margin-right:4px}
+.camMini{max-width:320px;margin:0 auto 10px}.camMini:empty{display:none}
+.camVacio{aspect-ratio:4/3;background:rgba(255,255,255,.78);border-radius:var(--r);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;font-weight:900;text-align:center;padding:16px;box-shadow:var(--sombra);font-size:clamp(16px,2.2vw,26px)}
+.camVacio .ico{height:2.4em;width:2.4em}
+.dedosGrid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px;align-items:start;margin-top:10px}
+@media (max-width:860px){.dedosGrid{grid-template-columns:1fr}}
+.dedosPanel{background:rgba(255,255,255,.94);border-radius:var(--r);box-shadow:var(--sombra);padding:16px;text-align:center}
+.bigN{font-size:clamp(90px,16vw,200px);font-weight:900;line-height:1;color:#2f9e44;min-height:1em}
+.objetivo{font-size:clamp(22px,3.4vw,40px);font-weight:900}
+.objetivo b{display:block;font-size:2.6em;line-height:1;color:#f08c00}
+.objetivo.suma b{display:inline;font-size:2em}.objetivo.suma .a{color:var(--g1)}.objetivo.suma .b{color:var(--g2)}
+.objetivo .sig{height:1.3em;width:1.3em;vertical-align:-.3em}
+.dedosPanel .est{font-size:clamp(28px,4vw,48px);margin:8px 0}
+.veo{font-weight:800;font-size:clamp(16px,2vw,24px);min-height:1.4em;color:var(--suave)}
+/* mover y juntar */
+.mesa{position:relative;width:100%;height:clamp(340px,62vh,620px);background:rgba(255,255,255,.55);border-radius:var(--r);box-shadow:var(--sombra);touch-action:none;overflow:hidden}
+.zona{position:absolute;border:5px dashed;border-radius:20px;display:flex;align-items:flex-start;justify-content:flex-end;padding:6px 12px}
+.zA{left:2%;top:3%;width:46%;height:50%;border-color:var(--g1);background:rgba(255,107,107,.10)}
+.zB{left:52%;top:3%;width:46%;height:50%;border-color:var(--g2);background:rgba(77,171,247,.12)}
+.zP{left:2%;top:58%;width:96%;height:38%;border-color:#c98a4b;background:rgba(201,138,75,.10)}
+.zona .cuenta{font-size:clamp(34px,5vw,64px);font-weight:900;line-height:1}
+.zA .cuenta{color:var(--g1)}.zB .cuenta{color:var(--g2)}.zona .cuenta.ok{color:#2f9e44}
+.zona .tit{position:absolute;left:12px;top:8px;font-weight:900;font-size:clamp(14px,1.8vw,22px);display:flex;align-items:center;gap:6px}
+.mesa.junta .zona{opacity:.15}
+.obj{position:absolute;transform:translate(-50%,-50%);width:clamp(46px,7vw,84px);height:clamp(46px,7vw,84px);cursor:grab;touch-action:none;transition:left .3s,top .3s;z-index:2}
+.obj img{width:100%;height:100%;object-fit:contain;pointer-events:none}
+.obj.arr{transition:none;z-index:9;filter:drop-shadow(0 8px 6px rgba(0,0,0,.3));transform:translate(-50%,-50%) scale(1.15)}
+.obj.cuenta{animation:salta .5s}
+.obj.fuera{opacity:.15;pointer-events:none}
+@keyframes salta{50%{transform:translate(-50%,-85%)}}
+.cursorMano{position:absolute;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;border:5px solid #7048e8;background:rgba(112,72,232,.22);z-index:12;pointer-events:none;display:none}
+.cursorMano.pinza{background:#7048e8}
+.consigna{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;font-weight:900;font-size:clamp(20px,3vw,36px);margin-bottom:8px}
+.consigna b{font-size:1.8em;line-height:1}.consigna .a{color:var(--g1)}.consigna .b{color:var(--g2)}
+.consigna .ico{height:1.5em;width:1.5em}
+.resJ{text-align:center;font-weight:900;font-size:clamp(30px,5vw,60px);min-height:1.2em}
+.resJ .sig{height:1em;width:1em}
 #app{padding:clamp(10px,2vw,26px);max-width:1500px;margin:0 auto}
 h1{font-size:clamp(34px,6.5vw,78px);margin:.1em 0;line-height:1;text-shadow:0 4px 0 rgba(255,255,255,.7)}
 h2{font-size:clamp(22px,3.4vw,40px);margin:.2em 0}
@@ -213,6 +261,7 @@ h3{margin:.2em 0;font-size:clamp(16px,2vw,22px)}
 <div id="capa" role="dialog" aria-live="polite"></div>
 <div id="diploma"></div>
 
+<script src="manos.js"></script>
 <script>
 (function (root) {
 'use strict';
@@ -276,7 +325,7 @@ function guarda() { try { localStorage.setItem(CLAVE, JSON.stringify(S.cfg)); } 
 
 var $ = function (s, r) { return (r || document).querySelector(s); };
 var $$ = function (s, r) { return [].slice.call((r || document).querySelectorAll(s)); };
-var APP = $('#app'), CAPA = $('#capa');
+var APP = $('#app'), CAPA = $('#capa'), MA = root.SumaManos;
 
 /* ============ SONIDO, VOZ, TEMPORIZADORES, CONFETI ============ */
 var AC = null;
@@ -315,7 +364,7 @@ function hablar(ids, texto) {
     if (pr && pr.catch) pr.catch(respaldo);
   })();
 }
-function diNumero(n) { hablar(['n' + n], NUM[n]); }
+function diNumero(n) { if (n >= 0 && n <= 10) hablar(['n' + n], NUM[n]); }
 var T = { l: [], set: function (f, ms) { var id = setTimeout(f, ms); this.l.push(id); return id; }, clear: function () { this.l.forEach(clearTimeout); this.l = []; } };
 var REDUCIDO = !!(root.matchMedia && root.matchMedia('(prefers-reduced-motion: reduce)').matches);
 function confeti(n) {
@@ -336,11 +385,13 @@ var EMO = {
   '💡': 'mirar', '🔍': 'mirar', '🤝': 'ayuda', '🖐️': 'mano_abierta', '🙋': 'mano_abierta', '🥢': 'palo', '🐸': 'rana', '🍎': 'contar',
   '🚙': 'coche', '⛺': 'casa', '🏠': 'casa', '🦉': 'pensar', '🧠': 'cabeza', '🐝': 'miel', '🎓': 'libro', '🧑‍🏫': 'maestra',
   '🔊': 'oir', '🗣️': 'hablar', '🔈': 'escuchar', '🎲': 'otra', '🔁': 'repetir', '🖨️': 'papel', '📋': 'lapiz', '🔥': 'fuego',
+  '⏹': 'parar', '📷': 'camara', '🤏': 'coger', '▶': 'jugar', '➜': 'derecha', '✓': 'bien', '⛶': 'pizarra', '▦': 'caja', '👁': 'ojo',
   '🐣': 'pollito', '🌴': 'arbol', '🌾': 'flor', '🌋': 'fuego', '📈': 'camino', '🎈': 'globo'
 };
 var EMO_RE = new RegExp('(' + Object.keys(EMO).sort(function (a, b) { return b.length - a.length; }).map(function (k) { return k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('|') + ')\uFE0F?', 'g');
 function pictea(h) { return String(h).replace(EMO_RE, function (m, k) { return '<img class="ico" src="pictos/' + EMO[k] + '.png" alt="" draggable="false">'; }); }
-function sig(k) { return '<img class="sig" src="pictos/signo_' + k + '.png" alt="' + (k === 'mas' ? 'más' : 'igual') + '" draggable="false">'; }
+function sig(k) { return '<img class="sig" src="pictos/signo_' + k + '.png" alt="' + ({ mas: 'más', igual: 'igual', menos: 'menos' }[k]) + '" draggable="false">'; }
+function ico(n) { return '<img class="ico" src="pictos/' + n + '.png" alt="" draggable="false">'; }
 function setMsg(t) { var m = $('#msg'); if (m) m.innerHTML = pictea(esc(t)); }
 function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
@@ -407,32 +458,36 @@ function play(rep) {
 }
 
 /* ============ PANTALLAS ============ */
-function show(p) { T.clear(); S.p = p; render(); try { window.scrollTo(0, 0); } catch (e) {} }
+function show(p) { T.clear(); S.p = p; if (p === 'dedos') { dInicia(); S.camMsg = ''; } if (p === 'junta') jInicia(); render(); try { window.scrollTo(0, 0); } catch (e) {} }
 
 function render() {
   CAPA.className = ''; CAPA.innerHTML = '';
-  var f = { inicio: pInicio, aprende: pAprende, cfgcamp: pCfgCamp, cfgmis: pCfgMis, juego: pJuego, podio: pPodio, finmis: pFinMis, maestra: pMaestra }[S.p];
+  var f = { inicio: pInicio, aprende: pAprende, cfgcamp: pCfgCamp, cfgmis: pCfgMis, juego: pJuego, podio: pPodio, finmis: pFinMis, maestra: pMaestra, dedos: pDedos, junta: pJunta, finjunta: pFinJunta }[S.p];
   APP.innerHTML = pictea(f()); post();
+  /* la cámara solo sigue encendida en la pantalla donde se encendió y si hay sitio donde enseñarla */
+  var cs = $('#camSlot'); if (MA.CAM.activa) { if (cs && MA.CAM.pantalla === S.p) MA.camMontar(cs); else MA.camParar(); }
   var s = $('#bSon'), v = $('#bVoz'); if (s) s.classList.toggle('off', !S.cfg.sonido); if (v) v.classList.toggle('off', !S.cfg.voz);
 }
 function post() { if (S.p === 'juego' && S.g && S.g.modo === 'mis') setTimeout(function () { var j = $('#jeep'); if (j && S.g) j.style.left = ((S.g.pos / (PARADAS - 1)) * 94 + 3) + '%'; }, 80); }
 
 function pInicio() {
-  return '<section class="inicio"><div class="portada"><img src="img/fonia.jpg" alt="Fönia"><span class="cruz">×</span><div class="colmenia"><span class="hexb">🐝</span><div><b>Colmenia</b><small>Aprendemos · Creamos · Transformamos</small></div></div></div><div class="logo">🦁🐘🦒🐒</div><h1>Safari de las Sumas</h1>' +
+  return '<section class="inicio"><div class="portada"><img src="img/fonia.jpg" alt="Fönia"><span class="cruz">' + sig('mas') + '</span><div class="colmenia"><span class="hexb">🐝</span><div><b>Colmenia</b><small>Aprendemos · Creamos · Transformamos</small></div></div></div><div class="logo">🦁🐘🦒🐒</div><h1>Safari de las Sumas</h1>' +
     '<p class="sub">Aprendemos a sumar jugando · 5 años · toda la clase en la pizarra</p><div class="menu">' +
     '<button class="card c1" data-act="ir" data-p="aprende"><i>🎓</i><b>Aprendemos juntos</b><span>Una suma, cinco formas de verla</span></button>' +
+    '<button class="card c5" data-act="ir" data-p="dedos"><i>📷</i><b>Mis dedos</b><span>La cámara ve tus manos y cuenta</span></button>' +
+    '<button class="card c6" data-act="ir" data-p="junta"><i>🤏</i><b>Mover y juntar</b><span>Arrastra los dibujos y suma</span></button>' +
     '<button class="card c2" data-act="ir" data-p="cfgcamp"><i>🏆</i><b>Campeonato</b><span>Equipos, puntos y podio</span></button>' +
     '<button class="card c3" data-act="ir" data-p="cfgmis"><i>🚙</i><b>Misión de la clase</b><span>Todos juntos hasta el campamento</span></button>' +
     '<button class="card c4" data-act="ir" data-p="maestra"><i>🧑‍🏫</i><b>Para la maestra</b><span>Evidencia, guion y resumen</span></button></div>' +
-    '<p class="creditos">Una actividad de <b>Fönia</b> · <b>Colmenia</b>.<br>Voz: Ximena (Microsoft) · Pictogramas propios de Fönia · Sin internet, sin datos de niños.</p></section>';
+    '<p class="creditos">Una actividad de <b>Fönia</b> · <b>Colmenia</b>.<br>Voz: Ximena (Microsoft) · Pictogramas propios de Fönia · Manos: MediaPipe (Google) · Sin datos de niños.</p></section>';
 }
 
 /* ---- Aprendemos juntos ---- */
 function pAprende() {
   var a = S.ap.a, b = S.ap.b, p = { a: a, b: b, sum: a + b }, em = 'manzana', h = '';
   h += '<section class="aprende"><div class="busca"><span class="buho">🦉</span><div class="globo" id="buho">Tengo ' + a + ' y me dan ' + b + ' más. ¿Cuántos tengo? ¡Vamos a verlo de cinco formas!</div></div>';
-  h += '<div class="stepper"><div class="num"><button class="mini" data-act="da" data-w="a" data-d="-1" aria-label="Menos al primero">−</button><b class="a">' + a + '</b><button class="mini" data-act="da" data-w="a" data-d="1" aria-label="Más al primero">+</button></div>' +
-    '<span class="sym">' + sig('mas') + '</span><div class="num"><button class="mini" data-act="da" data-w="b" data-d="-1" aria-label="Menos al segundo">−</button><b class="b">' + b + '</b><button class="mini" data-act="da" data-w="b" data-d="1" aria-label="Más al segundo">+</button></div>' +
+  h += '<div class="stepper"><div class="num"><button class="mini" data-act="da" data-w="a" data-d="-1" aria-label="Menos al primero">' + sig('menos') + '</button><b class="a">' + a + '</b><button class="mini" data-act="da" data-w="a" data-d="1" aria-label="Más al primero">' + sig('mas') + '</button></div>' +
+    '<span class="sym">' + sig('mas') + '</span><div class="num"><button class="mini" data-act="da" data-w="b" data-d="-1" aria-label="Menos al segundo">' + sig('menos') + '</button><b class="b">' + b + '</b><button class="mini" data-act="da" data-w="b" data-d="1" aria-label="Más al segundo">' + sig('mas') + '</button></div>' +
     '<span class="sym">' + sig('igual') + '</span><b class="res">' + (a + b) + '</b></div>';
   h += '<div class="centro fila" style="justify-content:center"><button class="btn verde" data-act="playAll">▶ Verlo todo, paso a paso</button><button class="btn oro" data-act="azar">🎲 Otra suma</button></div>';
   h += '<div class="repgrid">';
@@ -484,12 +539,13 @@ function pJuego() {
     (g.modo === 'camp' ? '<div class="turno">Turno de ' + g.equipos[g.turno].e + ' ' + g.equipos[g.turno].n + '</div>' : '<div class="turno">¿Quién sale a la pizarra? 🙋</div>') +
     (apoyoVisible(p.nivel) ? repContar(p.a, p.b, em).replace('class="rep r-contar"', 'class="rep r-contar peq"').replace(/<span class="tot st on"[^>]*>\d+<\/span>/, '<span class="tot">?</span>') : '') +
     '<div class="ops"><b class="a">' + p.a + '</b><span class="sym">' + sig('mas') + '</span><b class="b">' + p.b + '</b><span class="sym">' + sig('igual') + '</span><b class="int" id="int">?</b></div></div>' +
-    '<aside class="pistas"><div class="chips" id="chips">' + chipsPistas() + '</div><div id="panelPista">' + (g.verPista ? REPS[g.verPista].html(p, em) + '<p class="cap">' + esc(REPS[g.verPista].cap(p)) + '</p>' : '<div class="vacio">' + (S.cfg.pistas ? '💡 Toca una pista si la necesitas.<br>Mirar ayuda… ¡pero se gana un poco menos!' : 'Esta vez, sin pistas. ¡Tú puedes!') + '</div>') + '</div></aside></div>';
+    '<aside class="pistas"><div id="camSlot" class="camMini"></div><div class="chips" id="chips">' + chipsPistas() + '</div><div id="panelPista">' + (g.verPista ? REPS[g.verPista].html(p, em) + '<p class="cap">' + esc(REPS[g.verPista].cap(p)) + '</p>' : '<div class="vacio">' + (S.cfg.pistas ? '💡 Toca una pista si la necesitas.<br>Mirar ayuda… ¡pero se gana un poco menos!' : 'Esta vez, sin pistas. ¡Tú puedes!') + '</div>') + '</div></aside></div>';
   var maxT = p.nivel <= 1 ? 5 : 10;   /* al principio, solo 5 teclas: menos donde equivocarse */
   h += '<div class="teclado c' + maxT + '" id="teclado">';
   for (var n = 1; n <= maxT; n++) h += '<button data-act="resp" data-n="' + n + '" aria-label="' + n + '">' + n + '</button>';
   h += '</div><div class="msg" id="msg"></div><div class="acciones">';
   if (S.cfg.pistas) h += '<button class="btn oro" data-act="pista">💡 Pista</button>';
+  h += '<button class="btn azul" data-act="camJuego" id="bCamJ">' + (g.cam ? '⏹ Apagar la cámara' : '📷 Responder con los dedos') + '</button>';
   if (g.modo === 'camp' && S.cfg.ayuda && g.equipos.length > 1) h += '<button class="btn azul" data-act="ayuda" id="bAyuda">🤝 Pedir ayuda a otro equipo</button>';
   h += '<button class="btn" data-act="oir">🔈 Repetir</button></div></section>';
   return h;
@@ -563,6 +619,7 @@ function siguientePistaLibre() { var g = S.g, k; for (var i = 0; i < ORDEN_PISTA
 function responder(n) {
   var g = S.g; if (!g || g.resuelto) return;
   var btn = $('#teclado button[data-n="' + n + '"]');
+  if (btn && btn.classList.contains('mal')) return;
   if (n === g.p.sum) { acierto(); return; }
   g.fallos++; sonMal(); if (btn) btn.classList.add('mal');
   setMsg('¡Casi! Vamos a mirarlo juntos 🔍');
@@ -678,6 +735,8 @@ function pMaestra() {
     '<li><b>Empieza fácil:</b> «Primeros pasos» (sumas hasta 3) con solo 5 teclas, y sube poco a poco hasta 10. En el campeonato y la misión la dificultad va subiendo sola.</li>' +
     '<li><b>Los dibujos se van quitando</b> (con pictogramas hasta el nivel 2, solo números en el nivel 3) para pasar de lo concreto a lo abstracto.</li>' +
     '<li><b>Voz grabada</b> (Ximena, de Microsoft) que dice los números y las frases enteras.</li>' +
+    '<li><b>Mis dedos (cámara):</b> la cámara detecta las manos en el propio aparato (MediaPipe), dibuja el esqueleto de los dedos con un número en cada dedo levantado y cuenta. Tres juegos: ver tus manos, «enséñame el número» y «suma con las manos» (una mano por sumando). También se puede <b>responder con los dedos</b> en el campeonato y la misión.</li>' +
+    '<li><b>Mover y juntar:</b> se arrastran los dibujos con el dedo, el ratón o, con la cámara, con la pinza de la mano; se cuentan en voz alta y se juntan. Es material concreto en pantalla: conviene combinarlo con palitos o fichas de verdad.</li>' +
     '<li><b>Pictogramas propios de Fönia</b> en todas partes: las fichas para contar, los equipos, los botones y los signos + y =.</li>' +
     '<li><b>Sin reloj:</b> no hay cuenta atrás ni penalización por equivocarse. Un error activa una pista y se vuelve a intentar.</li>' +
     '<li><b>Misma dificultad para todos:</b> en cada ronda todos los equipos tienen la misma suma, repartida de forma distinta.</li>' +
@@ -686,10 +745,191 @@ function pMaestra() {
     '<li>Estos estudios son de Francia, Suiza y EE. UU.; ninguno es de un aula española concreta.</li>' +
     '<li>Esta app <b>no ha sido evaluada</b>. Se apoya en principios con evidencia, pero no hay datos de que ella, en particular, mejore las sumas.</li>' +
     '<li>El <b>campeonato y los puntos</b> son diseño motivacional: no hay estudio aquí que pruebe que mejoren el aprendizaje. Por eso no hay reloj y la clase gana unida.</li>' +
-    '<li>Ninguno de los estudios compara «dedos» contra «palitos» con 5 años en el aula: se pueden usar los dos.</li></ul></div>' +
-    '<h2>Créditos</h2><p>Una actividad de <b>Fönia</b> y <b>Colmenia</b> (Aprendemos · Creamos · Transformamos). Voz: Ximena (es-ES-XimenaNeural, Microsoft). Pictogramas propios de Fönia.</p>' +
-    '<h2>Privacidad</h2><p>Funciona sin internet, no guarda nombres ni datos de niños y no envía nada a ningún sitio. Solo recuerda los ajustes en este navegador.</p>' +
+    '<li>Ninguno de los estudios compara «dedos» contra «palitos» con 5 años en el aula: se pueden usar los dos.</li>' +
+    '<li>Lo que apoyan los estudios es <b>entrenar el conteo con los dedos</b>; no hay prueba de que hacerlo delante de una cámara con esqueleto sea mejor. La cámara aporta motivación y retroalimentación visual, no más aprendizaje demostrado.</li>' +
+    '<li>El detector de dedos puede fallar con poca luz, manos pequeñas o muy cerca de la cámara; por eso siempre se puede responder también con las teclas.</li></ul></div>' +
+    '<h2>Créditos</h2><p>Una actividad de <b>Fönia</b> y <b>Colmenia</b> (Aprendemos · Creamos · Transformamos). Voz: Ximena (es-ES-XimenaNeural, Microsoft). Pictogramas propios de Fönia. Detección de manos: MediaPipe Tasks Vision (Google, Apache 2.0), copia local en la carpeta de la actividad.</p>' +
+    '<h2>Privacidad</h2><p>No guarda nombres ni datos de niños y no envía nada a ningún sitio. <b>La cámara solo se enciende si tú lo pides, se procesa en este aparato, no graba ni guarda imágenes y se apaga al salir de la pantalla.</b> Con niños, pide antes la autorización del centro y de las familias. Solo se recuerdan los ajustes en este navegador.</p>' +
     '<div class="centro"><button class="btn verde" data-act="ir" data-p="aprende">🎓 Ir a «Aprendemos juntos»</button></div></section>';
+}
+
+
+/* ============ CÁMARA, DEDOS Y MOVER OBJETOS ============ */
+function cierraCapa() { CAPA.className = ''; CAPA.innerHTML = ''; }
+function camPermiso(alAceptar) {
+  if (S.camOk) { alAceptar(); return; }
+  CAPA.innerHTML = pictea('<div class="modal"><div class="grande">📷</div><h2>La cámara ve tus manos</h2>' +
+    '<p style="font-size:clamp(16px,2.2vw,24px);font-weight:700">Se usa solo en este aparato, para contar dedos y mover dibujos. <b>No se graba, no se guarda y no se envía nada.</b> Se apaga al salir de esta pantalla.</p>' +
+    '<p style="font-size:clamp(14px,1.8vw,19px);color:#6b6f86;font-weight:700">Con niños, pide antes el visto bueno del centro y de las familias.</p>' +
+    '<div class="fila" style="justify-content:center"><button class="btn verde" data-act="camSi">✓ Activar la cámara</button><button class="btn rojo" data-act="camNo">Ahora no</button></div></div>');
+  CAPA.className = 'on'; S.camPend = alAceptar;
+}
+function camAviso(t) { S.camMsg = t || ''; var a = $('#camAviso') || $('#jMsg') || $('#msg'); if (a) a.textContent = t || ''; }
+var AVISOS_CAM = { file: 'Para usar la cámara abre la página desde el enlace de Fönia, no desde un archivo.', sin: 'Este aparato no tiene cámara o el navegador no la deja usar.', error: 'No he podido encender la cámara. Mira que el navegador tenga permiso.' };
+/* enciende la cámara y la pone en el hueco #camSlot; frame recibe lo que ve en cada fotograma */
+function camArranca(frame, alListo) {
+  var slot = $('#camSlot'); if (!slot) return;
+  slot.innerHTML = ''; MA.camMontar(slot); camAviso('Encendiendo la cámara…');
+  MA.camIniciar(frame, S.p).then(function (r) {
+    if (r === true) { camAviso(''); if (alListo) alListo(); return; }
+    MA.camParar(); camAviso(AVISOS_CAM[r] || AVISOS_CAM.error); if (S.p === 'dedos') render();
+  });
+}
+function clamp01(v) { return Math.max(0, Math.min(1, v)); }
+
+/* ---- Mis dedos ---- */
+var DMODOS = { libre: '👁 Mis manos', numero: '🖐️ Enséñame el número', suma: '🤝 Suma con las manos' };
+function dInicia() { if (!S.d) S.d = { modo: 'libre', ronda: 0, rondas: 6, estrellas: 0, obj: null, hecho: false, fin: false, usados: {}, ultDicho: null, avisoDos: false }; }
+function dNuevo() {
+  var d = S.d; d.hecho = false; d.avisoDos = false;
+  if (d.modo === 'numero') { var lo = d.ronda < 2 ? 1 : d.ronda < 4 ? 3 : 4, hi = d.ronda < 2 ? 3 : d.ronda < 4 ? 5 : 10, v, t = 0; do { v = lo + Math.floor(Math.random() * (hi - lo + 1)); t++; } while (v === d.obj && t < 20); d.obj = v; }
+  else if (d.modo === 'suma') { var niv = [0, 0, 1, 1, 2, 2][d.ronda] || 2, pr, t2 = 0; do { pr = genProblema(niv, d.usados); t2++; } while ((pr.a > 5 || pr.b > 5) && t2 < 60); if (pr.a > 5 || pr.b > 5) pr = { a: 3, b: 2, sum: 5, nivel: niv }; d.obj = pr; }
+  if (MA.CAM.est) MA.CAM.est.reset(); MA.camProgreso(0);
+}
+function dPanelHTML() {
+  var d = S.d;
+  if (d.modo === 'libre') return '<div class="bigN" id="dN">–</div><p class="veo" id="dVeo">Enseña una o las dos manos a la cámara. ¡Verás los huesos de tus dedos!</p><p class="cap" style="color:var(--suave);font-weight:700">Cada dedo levantado lleva su número.</p>';
+  if (d.fin) return '<h2>¡Qué bien lo has hecho!</h2><div class="est">' + '⭐'.repeat(Math.max(1, Math.round(d.estrellas / d.rondas * 3))) + '</div><p class="veo">' + d.estrellas + ' de ' + d.rondas + ' conseguidos</p><button class="btn verde" data-act="dotra">🔁 Otra vez</button>';
+  var h = '<div class="veo">Ronda ' + (d.ronda + 1) + ' de ' + d.rondas + ' · ⭐ ' + d.estrellas + '</div>';
+  if (d.modo === 'numero') h += '<div class="objetivo">Enséñame el<b>' + d.obj + '</b></div>';
+  else h += '<div class="objetivo suma"><b class="a">' + d.obj.a + '</b> ' + sig('mas') + ' <b class="b">' + d.obj.b + '</b></div><p class="veo" style="color:var(--tinta)">Una mano con ' + d.obj.a + ' dedos y la otra con ' + d.obj.b + '.</p>';
+  h += '<div class="veo" id="dVeo">' + (d.hecho ? '' : 'Mantén los dedos quietos un momento.') + '</div><div class="resJ" id="dRes"></div>';
+  h += '<button class="btn verde" data-act="dsig" id="bDsig" style="display:none">Siguiente ➜</button>';
+  return h;
+}
+function pDedos() {
+  var d = S.d, on = MA.CAM.activa, h = '<section class="dedos"><div class="info">';
+  ['libre', 'numero', 'suma'].forEach(function (m) { h += '<button class="chip' + (d.modo === m ? ' sel' : '') + '" data-act="dmodo" data-m="' + m + '">' + DMODOS[m] + '</button>'; });
+  h += '</div><div class="dedosGrid"><div class="camCol"><div id="camSlot" class="camSlot">' + (on ? '' : '<div class="camVacio">📷<span>La cámara está apagada</span></div>') + '</div><div id="camAviso" class="msg">' + esc(S.camMsg || '') + '</div>' +
+    '<div class="acciones">' + (on ? '<button class="btn rojo" data-act="camOff">⏹ Apagar la cámara</button>' : '<button class="btn verde" data-act="camOn">📷 Encender la cámara</button>') + '</div></div>' +
+    '<aside class="dedosPanel" id="dPanel">' + dPanelHTML() + '</aside></div><p class="creditos">La cámara no graba ni envía nada: la mano se detecta en este aparato (MediaPipe).</p></section>';
+  return h;
+}
+function dExito() {
+  var d = S.d; d.hecho = true; d.estrellas++; sonBien(); confeti(36); MA.camProgreso(1);
+  var r = $('#dRes'), b = $('#bDsig');
+  if (d.modo === 'numero') { if (r) r.textContent = d.obj; hablar(['n' + d.obj, 'conseguido'], d.obj + '. ¡Lo has conseguido!'); }
+  else { if (r) r.innerHTML = d.obj.a + ' ' + sig('mas') + ' ' + d.obj.b + ' ' + sig('igual') + ' ' + d.obj.sum; hablar(['n' + d.obj.a, 'mas', 'n' + d.obj.b, 'son', 'n' + d.obj.sum, 'conseguido'], NUM[d.obj.a] + ' más ' + NUM[d.obj.b] + ' son ' + NUM[d.obj.sum] + '. ¡Lo has conseguido!'); }
+  var v = $('#dVeo'); if (v) v.textContent = '¡Lo has conseguido!';
+  if (b) { b.style.display = ''; b.innerHTML = pictea(d.ronda >= d.rondas - 1 ? 'Terminar ➜' : 'Siguiente ➜'); }
+}
+function frameDedos(info) {
+  var d = S.d; if (S.p !== 'dedos' || !d || d.fin) return; var est = MA.CAM.est;
+  if (d.modo === 'libre') {
+    var e = est.mete(info.hay ? info.total : -1), n = $('#dN'); if (n) n.textContent = info.hay ? info.total : '–'; MA.camProgreso(info.hay ? est.fraccion() : 0);
+    if (!info.hay) d.ultDicho = null; else if (e !== null && e >= 1 && e !== d.ultDicho) { d.ultDicho = e; diNumero(e); }
+    return;
+  }
+  if (d.hecho) return;
+  var ok, veo = $('#dVeo');
+  if (d.modo === 'numero') { ok = info.hay && info.total === d.obj; if (veo) veo.textContent = info.hay ? 'Veo ' + info.total + (ok ? '… ¡sigue así!' : '') : 'Enséñame tus manos a la cámara.'; }
+  else {
+    var cs = info.manos.map(function (m) { return m.n; }).sort(), obj = [d.obj.a, d.obj.b].sort();
+    ok = info.manos.length === 2 && cs.join() === obj.join();
+    if (veo) veo.textContent = info.manos.length === 2 ? 'Veo ' + info.manos.map(function (m) { return m.n; }).join(' y ') + (ok ? '… ¡sigue así!' : '') : info.manos.length === 1 ? 'Necesito ver las dos manos.' : 'Enséñame tus manos a la cámara.';
+    if (info.manos.length === 1 && !d.avisoDos) { d.avisoDos = true; hablar(['dosmanos'], 'Necesito ver las dos manos.'); }
+  }
+  var r = est.mete(ok ? 'ok' : 'no'); MA.camProgreso(ok ? est.fraccion() : 0);
+  if (r === 'ok') dExito();
+}
+
+/* ---- Mover y juntar (arrastrar dibujos con el dedo, el ratón o la mano delante de la cámara) ---- */
+var ZONAS = { A: { x: 2, y: 3, w: 46, h: 50, c: 5 }, B: { x: 52, y: 3, w: 46, h: 50, c: 5 }, P: { x: 2, y: 58, w: 96, h: 38, c: 6 }, C: { x: 14, y: 12, w: 72, h: 60, c: 5 } };
+function jInicia() { S.j = { ronda: 0, rondas: 6, errores: 0, perfecto: 0, estrellas: 0, items: [], ord: 0, arr: null, hecho: false, pinza: false, usados: {}, tema: 'manzana', p: null }; jNuevo(); }
+function jNuevo() {
+  var j = S.j, niv = [0, 0, 1, 1, 2, 2][j.ronda] || 2; j.p = genProblema(niv, j.usados); j.hecho = false; j.arr = null; j.errTanda = 0; j.ord = 0;
+  j.tema = TEMAS[Math.floor(Math.random() * TEMAS.length)]; var n = Math.min(12, j.p.sum + 2); j.items = [];
+  for (var i = 0; i < n; i++) j.items.push({ id: i, z: 'P', orden: ++j.ord, x: 50, y: 80 });
+  jAcomoda();
+}
+function jSlot(z, k) { var Z = ZONAS[z], col = k % Z.c, row = Math.min(2, Math.floor(k / Z.c)); return { x: Z.x + (col + 0.5) * Z.w / Z.c, y: Z.y + (row + 0.5) * Z.h / 3 }; }
+function jAcomoda() {
+  var j = S.j; ['A', 'B', 'P', 'C'].forEach(function (z) {
+    j.items.filter(function (it) { return it.z === z && it.id !== j.arr; }).sort(function (a, b) { return a.orden - b.orden; }).forEach(function (it, k) { var s0 = jSlot(z, k); it.x = s0.x; it.y = s0.y; });
+  });
+  jPinta();
+}
+function jPinta() {
+  var j = S.j; j.items.forEach(function (it) { var el = $('.obj[data-id="' + it.id + '"]'); if (el) { el.style.left = it.x + '%'; el.style.top = it.y + '%'; el.classList.toggle('arr', j.arr === it.id); } });
+  ['A', 'B'].forEach(function (z) { var c = $('#c' + z), n = jCuenta(z); if (c) { c.textContent = n; c.classList.toggle('ok', n === (z === 'A' ? j.p.a : j.p.b)); } });
+}
+function jCuenta(z) { return S.j.items.filter(function (it) { return it.z === z; }).length; }
+function jItem(id) { return S.j.items.filter(function (it) { return it.id === id; })[0]; }
+function jZonaDe(pt) { var r = 'P'; ['A', 'B'].forEach(function (z) { var Z = ZONAS[z]; if (pt.x >= Z.x && pt.x <= Z.x + Z.w && pt.y >= Z.y && pt.y <= Z.y + Z.h) r = z; }); return r; }
+function jCerca(pt, radio) {
+  var best = null, bd = radio; S.j.items.forEach(function (it) { if (it.z === 'C') return; var d = Math.sqrt(Math.pow(it.x - pt.x, 2) + Math.pow((it.y - pt.y) * 0.6, 2)); if (d < bd) { bd = d; best = it.id; } }); return best;
+}
+function jInicio(id, pt) { var j = S.j, it = jItem(id); if (!it || j.hecho) return; j.arr = id; it.orden = ++j.ord; it.x = pt.x; it.y = pt.y; jAcomoda(); }
+function jMueve(pt) { var it = jItem(S.j.arr); if (!it) return; it.x = pt.x; it.y = pt.y; jPinta(); }
+function jFin(pt) {
+  var j = S.j, it = jItem(j.arr); if (!it) { j.arr = null; return; }
+  var antes = it.z, z = jZonaDe(pt); it.z = z; it.orden = ++j.ord; j.arr = null; jAcomoda(); sonTic();
+  if (z !== 'P') { var n = jCuenta(z); diNumero(n); } else if (antes !== 'P') { var m = jCuenta(antes); if (m > 0) diNumero(m); }
+  var msg = $('#jMsg'); if (msg) msg.textContent = '';
+}
+function jPct(ev) { var m = $('#mesa'); if (!m) return { x: 0, y: 0 }; var r = m.getBoundingClientRect(); return { x: (ev.clientX - r.left) / (r.width || 1) * 100, y: (ev.clientY - r.top) / (r.height || 1) * 100 }; }
+function jMsg(t) { var m = $('#jMsg'); if (m) m.innerHTML = pictea(esc(t)); }
+function pJunta() {
+  var j = S.j, p = j.p, on = MA.CAM.activa, h = '<section class="junta"><div class="info"><span class="pill">Ronda ' + (j.ronda + 1) + ' de ' + j.rondas + '</span><span class="pill">' + NIVELES[p.nivel].emoji + ' ' + NIVELES[p.nivel].nombre + '</span><span class="pill">⭐ ' + j.estrellas + '</span></div>';
+  h += '<div class="consigna"><span>Pon</span><b class="a">' + p.a + '</b><span>a la izquierda</span>' + ico('izquierda') + '<span>y</span><b class="b">' + p.b + '</b><span>a la derecha</span>' + ico('derecha') + '</div><div class="resJ" id="jRes"></div>';
+  h += '<div id="camSlot" class="camMini">' + '</div>';
+  h += '<div class="mesa" id="mesa"><div class="zona zA" id="zA"><div class="tit">' + ico('izquierda') + ' izquierda</div><div class="cuenta" id="cA">0</div></div><div class="zona zB" id="zB"><div class="tit">' + ico('derecha') + ' derecha</div><div class="cuenta" id="cB">0</div></div><div class="zona zP" id="zP"></div>';
+  j.items.forEach(function (it) { h += '<div class="obj" data-id="' + it.id + '" style="left:' + it.x + '%;top:' + it.y + '%">' + pic(j.tema) + '</div>'; });
+  h += '<div class="cursorMano" id="curM"></div></div><div id="jMsg" class="msg"></div><div class="acciones"><button class="btn verde" data-act="jjuntar" id="bJ">🤝 Juntar</button>' +
+    '<button class="btn azul" data-act="' + (on ? 'jmanoOff' : 'jmano') + '">' + (on ? '⏹ Apagar la cámara' : '📷 Mover con la mano') + '</button>' +
+    '<button class="btn" data-act="jsig" id="bJsig" style="display:none">Siguiente ➜</button></div><p class="creditos">Arrastra con el dedo o el ratón. Con la cámara: junta el pulgar y el índice (pinza) para coger un dibujo y ábrelos para soltarlo.</p></section>';
+  setTimeout(function () { if (S.p === 'junta') { jPinta(); hablar(['pon', 'n' + p.a, 'izq', 'n' + p.b, 'der'], 'Pon ' + NUM[p.a] + ' a la izquierda, y ' + NUM[p.b] + ' a la derecha.'); } }, 0);
+  return h;
+}
+function jJuntar() {
+  var j = S.j; if (j.hecho) return; var A = jCuenta('A'), B = jCuenta('B'), p = j.p;
+  if (A !== p.a || B !== p.b) {
+    j.errores++; j.errTanda++; sonMal();
+    jMsg(A + B === 0 ? 'Mueve los dibujos con el dedo a cada lado.' : 'Ahora hay ' + A + ' a la izquierda y ' + B + ' a la derecha. Tienen que ser ' + p.a + ' y ' + p.b + '.');
+    hablar(A + B === 0 ? ['muevedib'] : ['cuentalado'], A + B === 0 ? 'Mueve los dibujos con el dedo.' : 'Mira cuántos hay en cada lado.'); return;
+  }
+  j.hecho = true; jMsg('');
+  var orden = j.items.filter(function (it) { return it.z === 'A'; }).concat(j.items.filter(function (it) { return it.z === 'B'; }));
+  orden.forEach(function (it) { it.z = 'C'; it.orden = ++j.ord; });
+  j.items.forEach(function (it) { var el = $('.obj[data-id="' + it.id + '"]'); if (el && it.z === 'P') el.classList.add('fuera'); });
+  var m = $('#mesa'); if (m) m.classList.add('junta'); jAcomoda(); hablar(['juntamos'], '¡Ahora los juntamos!');
+  var k = 0; T.set(function cuenta() {
+    if (k >= orden.length) { jExito(); return; }
+    var el = $('.obj[data-id="' + orden[k].id + '"]'); if (el) el.classList.add('cuenta'); sonTic(); diNumero(k + 1); k++; T.set(cuenta, 650);
+  }, 1500);
+}
+function jExito() {
+  var j = S.j, p = j.p, perfecto = j.errTanda === 0; if (perfecto) j.perfecto++; j.estrellas++; sonBien(); confeti(34);
+  var r = $('#jRes'); if (r) r.innerHTML = pictea(p.a + ' ' + sig('mas') + ' ' + p.b + ' ' + sig('igual') + ' ' + p.sum + (perfecto ? ' ⭐' : ''));
+  hablar(['n' + p.a, 'mas', 'n' + p.b, 'son', 'n' + p.sum, 'conseguido'], NUM[p.a] + ' más ' + NUM[p.b] + ' son ' + NUM[p.sum] + '. ¡Lo has conseguido!');
+  var b = $('#bJsig'), bj = $('#bJ'); if (b) { b.style.display = ''; b.innerHTML = pictea(j.ronda >= j.rondas - 1 ? 'Terminar ➜' : 'Siguiente ➜'); } if (bj) bj.style.display = 'none';
+}
+function pFinJunta() {
+  var j = S.j, est = j.perfecto >= j.rondas - 1 ? 3 : j.perfecto >= Math.ceil(j.rondas / 2) ? 2 : 1;
+  return '<section class="centro"><h1>¡Qué bien has movido!</h1><div class="estr" style="font-size:clamp(56px,10vw,120px)">' + '⭐'.repeat(est) + '</div><p class="sub">A la primera: ' + j.perfecto + ' de ' + j.rondas + '. Todas las sumas juntadas.</p>' +
+    '<div class="fila" style="justify-content:center"><button class="btn verde" data-act="jotra">🔁 Otra vez</button><button class="btn" data-act="ir" data-p="inicio">🏠 Inicio</button></div><p class="creditos">Fönia · 🐝 Colmenia — Aprendemos · Creamos · Transformamos</p></section>';
+}
+/* la mano delante de la cámara hace de puntero: la pinza coge y suelta */
+function frameJunta(info) {
+  var j = S.j; if (S.p !== 'junta' || !j) return; var cur = $('#curM');
+  if (!info.hay || j.hecho) { if (cur) cur.style.display = 'none'; if (j.pinza && j.arr != null && j.ptMano) jFin(j.ptMano); j.pinza = false; return; }
+  var lm = (info.manos.filter(function (m) { return MA.pinza(m.lm, j.pinza); })[0] || info.manos[0]).lm, q = MA.puntoPinza(lm);
+  var pt = { x: clamp01(((1 - q.x) - 0.1) / 0.8) * 100, y: clamp01((q.y - 0.1) / 0.8) * 100 }, pz = MA.pinza(lm, j.pinza); j.ptMano = pt;
+  if (cur) { cur.style.display = 'block'; cur.style.left = pt.x + '%'; cur.style.top = pt.y + '%'; cur.classList.toggle('pinza', pz); }
+  if (pz && !j.pinza) { j.pinza = true; var id = jCerca(pt, 12); if (id != null) jInicio(id, pt); }
+  else if (pz && j.pinza) { if (j.arr != null) jMueve(pt); }
+  else if (!pz && j.pinza) { j.pinza = false; if (j.arr != null) jFin(pt); }
+}
+
+/* ---- Responder con los dedos en el campeonato y la misión ---- */
+function frameJuego(info) {
+  var g = S.g; if (S.p !== 'juego' || !g) return; var C = MA.CAM;
+  /* tras encender la cámara hay que bajar las manos una vez; tras responder, cambiar el número o bajarlas */
+  if (C.bloq === 'inicio') { if (!info.hay) { C.bloq = false; C.est.reset(); } else { MA.camProgreso(0); return; } }
+  else if (C.bloq) { if (!info.hay || info.total !== C.ultimo) { C.bloq = false; C.est.reset(); } else { MA.camProgreso(0); return; } }
+  if (g.resuelto || CAPA.classList.contains('on')) { MA.camProgreso(0); return; }
+  var e = C.est.mete(info.hay && info.total >= 1 ? info.total : 0); MA.camProgreso(info.hay && info.total >= 1 ? C.est.fraccion() : 0);
+  if (e !== null && e >= 1) { C.ultimo = e; C.bloq = true; C.est.reset(); responder(e); }
 }
 
 /* ============ EVENTOS ============ */
@@ -715,6 +955,22 @@ document.addEventListener('click', function (ev) {
     (function nx() { if (i >= cards.length) return; var c = cards[i++]; try { c.scrollIntoView({ block: 'center', behavior: REDUCIDO ? 'auto' : 'smooth' }); } catch (e) {} play(c); var n = $$('.st', c).length; T.set(nx, (n + 2) * 700 + 400); })();
     return;
   }
+  if (act === 'camSi') { S.camOk = true; cierraCapa(); var cb = S.camPend; S.camPend = null; if (cb) cb(); return; }
+  if (act === 'camNo') { cierraCapa(); S.camPend = null; return; }
+  if (act === 'dmodo') { var d0 = S.d; d0.modo = t.dataset.m; d0.ronda = 0; d0.estrellas = 0; d0.fin = false; d0.usados = {}; d0.ultDicho = null; d0.obj = null; if (d0.modo !== 'libre') dNuevo(); T.clear(); render(); if (d0.modo !== 'libre' && MA.CAM.activa) { if (d0.modo === 'suma') hablar(['ens', 'n' + d0.obj.a, 'unamano', 'n' + d0.obj.b, 'otramano'], 'Enséñame ' + NUM[d0.obj.a] + ' dedos en una mano, y ' + NUM[d0.obj.b] + ' en la otra.'); else hablar(['ens', 'n' + d0.obj, 'condedos'], 'Enséñame ' + NUM[d0.obj] + ' con los dedos.'); } return; }
+  if (act === 'camOn') { camPermiso(function () { camArranca(frameDedos, function () { var d1 = S.d; if (d1.modo !== 'libre' && !d1.obj) dNuevo(); render(); MA.camMontar($('#camSlot')); if (d1.modo === 'numero') hablar(['ens', 'n' + d1.obj, 'condedos'], 'Enséñame ' + NUM[d1.obj] + ' con los dedos.'); else if (d1.modo === 'suma') hablar(['ens', 'n' + d1.obj.a, 'unamano', 'n' + d1.obj.b, 'otramano'], 'Enséñame ' + NUM[d1.obj.a] + ' dedos en una mano, y ' + NUM[d1.obj.b] + ' en la otra.'); else hablar(['manoscam'], 'Enséñame tus manos a la cámara.'); }); }); return; }
+  if (act === 'camOff') { MA.camParar(); render(); return; }
+  if (act === 'dsig') { var d2 = S.d; d2.ronda++; if (d2.ronda >= d2.rondas) { d2.fin = true; sonFin(); confeti(60); } else dNuevo(); render(); MA.camMontar($('#camSlot')); if (!d2.fin) { if (d2.modo === 'numero') hablar(['ens', 'n' + d2.obj, 'condedos'], 'Enséñame ' + NUM[d2.obj] + ' con los dedos.'); else hablar(['ens', 'n' + d2.obj.a, 'unamano', 'n' + d2.obj.b, 'otramano'], 'Enséñame ' + NUM[d2.obj.a] + ' dedos en una mano, y ' + NUM[d2.obj.b] + ' en la otra.'); } return; }
+  if (act === 'dotra') { var d3 = S.d; d3.ronda = 0; d3.estrellas = 0; d3.fin = false; d3.usados = {}; dNuevo(); render(); MA.camMontar($('#camSlot')); return; }
+  if (act === 'jjuntar') { jJuntar(); return; }
+  if (act === 'jsig') { var j1 = S.j; j1.ronda++; if (j1.ronda >= j1.rondas) { sonFin(); confeti(80); show('finjunta'); return; } jNuevo(); render(); return; }
+  if (act === 'jotra') { show('junta'); return; }
+  if (act === 'jmano') { camPermiso(function () { camArranca(frameJunta, function () { render(); MA.camMontar($('#camSlot')); }); }); return; }
+  if (act === 'jmanoOff') { MA.camParar(); render(); return; }
+  if (act === 'camJuego') {
+    if (MA.CAM.activa) { MA.camParar(); S.g.cam = false; render(); return; }
+    camPermiso(function () { S.g.cam = true; var b = $('#bCamJ'); if (b) b.innerHTML = pictea('⏹ Apagar la cámara'); MA.CAM.bloq = 'inicio'; camArranca(frameJuego, function () { MA.CAM.bloq = 'inicio'; }); }); return;
+  }
   if (act === 'empezarCamp') { empezarCamp(); return; }
   if (act === 'empezarMis') { empezarMis(); return; }
   if (act === 'resp') { responder(+t.dataset.n); return; }
@@ -727,6 +983,13 @@ document.addEventListener('click', function (ev) {
   if (act === 'sig') { siguiente(); return; }
   if (act === 'diploma') { diploma(); return; }
 });
+document.addEventListener('pointerdown', function (ev) {
+  if (S.p !== 'junta' || !S.j) return; var o = ev.target.closest && ev.target.closest('.obj'); if (!o || S.j.hecho) return;
+  ev.preventDefault && ev.preventDefault(); jInicio(+o.dataset.id, jPct(ev)); try { o.setPointerCapture && ev.pointerId != null && o.setPointerCapture(ev.pointerId); } catch (e) { }
+});
+document.addEventListener('pointermove', function (ev) { if (S.p === 'junta' && S.j && S.j.arr != null && !S.j.pinza) jMueve(jPct(ev)); });
+function sueltaPuntero(ev) { if (S.p === 'junta' && S.j && S.j.arr != null && !S.j.pinza) jFin(jPct(ev)); }
+document.addEventListener('pointerup', sueltaPuntero); document.addEventListener('pointercancel', sueltaPuntero);
 document.addEventListener('keydown', function (ev) {
   if (ev.target && /input|textarea|select/i.test(ev.target.tagName)) return;
   if (S.p === 'juego' && S.g) {
@@ -738,7 +1001,7 @@ document.addEventListener('keydown', function (ev) {
 document.addEventListener('visibilitychange', function () { if (document.hidden) { T.clear(); detener(); } });
 
 /* para las pruebas */
-root.SumaSafari = { genProblema: genProblema, genRonda: genRonda, puntos: puntos, nivelRonda: nivelRonda, nivelParada: nivelParada, ranking: ranking, estrellasMision: estrellasMision, NIVELES: NIVELES, PARADAS: PARADAS, estado: S };
+root.SumaSafari = { jPct: jPct, genProblema: genProblema, genRonda: genRonda, puntos: puntos, nivelRonda: nivelRonda, nivelParada: nivelParada, ranking: ranking, estrellasMision: estrellasMision, NIVELES: NIVELES, PARADAS: PARADAS, estado: S };
 
 document.getElementById('top').innerHTML = pictea(document.getElementById('top').innerHTML);
 root.SumaSafari.pictea = pictea;

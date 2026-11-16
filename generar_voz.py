@@ -1,6 +1,6 @@
 """Voz de «Safari de las Sumas»: Ximena, de Microsoft (es-ES-XimenaNeural), con edge-tts (vía gratuita, no oficial).
 Decisión de José (11/11/2026). Solo se envían a Microsoft las frases de abajo: son genéricas, sin datos de nadie.
-Uso:  python3 generar_voz.py      (genera voz/*.mp3; hace falta edge-tts, ffmpeg y conexión)
+Uso:  python3 generar_voz.py [--todo]   (genera solo los que faltan en voz/*.mp3; con --todo, todos; hace falta edge-tts, ffmpeg y conexión)
 Las frases se leen una detrás de otra desde la página: «tres» + «más» + «dos» + «¿cuántos son?»."""
 import asyncio, pathlib, subprocess, sys, tempfile
 
@@ -25,6 +25,12 @@ F.update({
     'racha': '¡Racha de tres! Un punto extra.', 'llegamos': '¡Hemos llegado al campamento!',
     'empate': '¡Empate! ¡Qué buen campeonato!', 'meta': '¡La clase ha conseguido la meta entre todos!',
     'clase': 'Turno de la clase. ¿Quién sale a la pizarra?', 'bienvenida': 'Bienvenidos al Safari de las Sumas.',
+    # cámara y manos
+    'ens': 'Enséñame', 'unamano': 'dedos en una mano, y', 'otramano': 'en la otra.', 'condedos': 'con los dedos.',
+    'conseguido': '¡Lo has conseguido!', 'dosmanos': 'Necesito ver las dos manos.', 'manoscam': 'Enséñame tus manos a la cámara.',
+    # mover y juntar
+    'pon': 'Pon', 'izq': 'a la izquierda, y', 'der': 'a la derecha.', 'juntamos': '¡Ahora los juntamos!',
+    'muevedib': 'Mueve los dibujos con el dedo.', 'cuentalado': 'Mira cuántos hay en cada lado.',
 })
 for i, e in enumerate(EQ):
     F['turno%d' % i] = 'Turno de los %s.' % e
@@ -35,6 +41,8 @@ for i, e in enumerate(EQ):
 
 async def genera(tmp):
     for nombre, texto in F.items():
+        if (SALIDA / (nombre + '.mp3')).exists() and '--todo' not in sys.argv:
+            continue
         crudo = pathlib.Path(tmp) / (nombre + '.mp3')
         await edge_tts.Communicate(texto, VOZ, rate=RITMO).save(str(crudo))
         subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', str(crudo), '-af',
