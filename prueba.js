@@ -4,31 +4,82 @@ var path = require('path'), fallos = 0;
 function ok(n, c, x) { if (!c) fallos++; console.log((c ? 'ok     ' : 'FALLO  ') + n + (x !== undefined ? '  ' + x : '')); }
 var JD = require('/Users/joseaserraf/Developer/ACADEMIA-MEMBRESIA-LOGOPED-IA-visual/node_modules/jsdom'), JSDOM = JD.JSDOM, VC = JD.VirtualConsole;
 
-function abre() {
+function abre(pre) {
   var errs = [], vc = new VC(); vc.on('jsdomError', function (e) { errs.push(String(e.message).slice(0, 200)); });
   return JSDOM.fromFile(path.join(__dirname, 'index.html'), { url: 'http://localhost/', runScripts: 'dangerously', pretendToBeVisual: true, virtualConsole: vc,
-    beforeParse: function (w) { w.matchMedia = function () { return { matches: false, addListener: function () { }, addEventListener: function () { } }; }; w.HTMLElement.prototype.scrollIntoView = function () { }; w.scrollTo = function () { }; w.print = function () { w.__print = (w.__print || 0) + 1; }; }
+    beforeParse: function (w) { if (pre) pre(w); w.matchMedia = function () { return { matches: false, addListener: function () { }, addEventListener: function () { } }; }; w.HTMLElement.prototype.scrollIntoView = function () { }; w.scrollTo = function () { }; w.print = function () { w.__print = (w.__print || 0) + 1; }; }
   }).then(function (dom) { return { w: dom.window, d: dom.window.document, errs: errs }; });
 }
 var esp = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
 function clic(P, sel) { var e = P.d.querySelector(sel); if (!e) throw new Error('no hay ' + sel); e.click(); }
 function txt(P, sel) { var e = P.d.querySelector(sel); return e ? e.textContent.trim() : ''; }
 
+
+/* ---------- voz de Piper, pictos propios, nivel fácil y marca (página nueva) ---------- */
+function extra() {
+  var fs = require('fs'), aud = [], hablado = [];
+  var html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+  return abre(function (w) {
+    w.Audio = function (src) { this.src = src; aud.push(src); var s = this; this.play = function () { setTimeout(function () { s.onended && s.onended(); }, 3); return Promise.resolve(); }; this.pause = function () { }; };
+  }).then(function (P) {
+    var w = P.w, d = P.d, L = w.SumaSafari, c = L.estado.cfg;
+    ok('Marca: la portada trae el logo de Fönia, «Colmenia» y su lema, y los créditos citan Piper', d.querySelector('.portada img').getAttribute('src') === 'img/fonia.jpg' && /Colmenia/.test(txt(P, '.portada')) && /Aprendemos · Creamos · Transformamos/.test(txt(P, '.portada')) && /Piper/.test(txt(P, '.creditos')) && /Fönia/.test(txt(P, '.creditos')) && d.querySelector('#top .firma img'));
+    ok('Marca: el logo existe en disco', fs.existsSync(path.join(__dirname, 'img/fonia.jpg')));
+    var temas = /var TEMAS = \[([^\]]+)\]/.exec(html)[1].match(/'([^']+)'/g).map(function (x) { return x.replace(/'/g, ''); });
+    ok('Pictos propios: los ' + temas.length + ' pictogramas de la lista existen en pictos/', temas.length >= 10 && temas.every(function (t) { return fs.existsSync(path.join(__dirname, 'pictos', t + '.png')); }), temas.filter(function (t) { return !fs.existsSync(path.join(__dirname, 'pictos', t + '.png')); }).join());
+    var ids = ['mas', 'son', 'cuantos', 'casi', 'juntos', 'sinayuda', 'resuelto', 'racha', 'llegamos', 'empate', 'bien1', 'bien2', 'bien3', 'clase'];
+    for (var k = 0; k <= 10; k++) ids.push('n' + k); for (k = 0; k < 4; k++) ids.push('turno' + k, 'bien_eq' + k, 'ganan' + k, 'ayudan' + k);
+    ok('Voz Piper: existen los ' + ids.length + ' audios (números, frases y equipos)', ids.every(function (i) { return fs.existsSync(path.join(__dirname, 'voz', i + '.mp3')); }), ids.filter(function (i) { return !fs.existsSync(path.join(__dirname, 'voz', i + '.mp3')); }).join());
+    var usados = html.match(/hablar\(\[[^\]]*\]/g) || [];
+    ok('Voz: todos los audios que pide el código existen', usados.every(function (u) { return (u.match(/'([a-z_0-9]+)'/g) || []).every(function (x) { var n = x.replace(/'/g, ''); return /^(n|turno|ganan|ayudan|bien_eq)$/.test(n) || fs.existsSync(path.join(__dirname, 'voz', n + '.mp3')); }); }));
+    /* nivel por defecto: empieza fácil */
+    c.sonido = false; c.voz = true; c.equipos = 3; c.rondas = 5; c.nivel = 'prog';
+    clic(P, '[data-p=cfgcamp]'); clic(P, '[data-act=empezarCamp]');
+    var g = L.estado.g;
+    ok('Nivel fácil: con «Va subiendo» la primera suma es de «Primeros pasos» (hasta 3), con solo 5 teclas y dibujos de los pictos', g.p.nivel === 0 && g.p.sum <= 3 && d.querySelectorAll('#teclado button').length === 5 && d.querySelectorAll('.pregunta .it img').length === g.p.sum && /^pictos\/[a-z]+\.png$/.test(d.querySelector('.pregunta .it img').getAttribute('src')), g.p.a + '+' + g.p.b);
+    return esp(700).then(function () {
+      var esperado = ['voz/turno0.mp3', 'voz/n' + g.p.a + '.mp3', 'voz/mas.mp3', 'voz/n' + g.p.b + '.mp3', 'voz/cuantos.mp3'];
+      ok('Voz: la pregunta suena en orden «Turno de los Leones · tres · más · dos · ¿cuántos son?»', aud.join() === esperado.join(), aud.join(' '));
+      aud.length = 0; clic(P, '#teclado button[data-n="' + g.p.sum + '"]');
+      return esp(300);
+    }).then(function () {
+      var esp1 = ['voz/n' + g.p.a + '.mp3', 'voz/mas.mp3', 'voz/n' + g.p.b + '.mp3', 'voz/son.mp3', 'voz/n' + g.p.sum + '.mp3', 'voz/bien_eq0.mp3'];
+      ok('Voz: al acertar dice «a más b son c» y «¡Muy bien, Leones!»', aud.join() === esp1.join(), aud.join(' '));
+      /* si un audio no carga, lee el texto con la voz del aparato */
+      w.Audio = function (src) { var s = this; this.play = function () { setTimeout(function () { s.onerror && s.onerror(); }, 3); return Promise.resolve(); }; this.pause = function () { }; };
+      w.SpeechSynthesisUtterance = function (t) { this.text = t; }; w.speechSynthesis = { cancel: function () { }, speak: function (u) { hablado.push(u.text); } };
+      clic(P, '[data-act=sig]'); return esp(600);
+    }).then(function () {
+      ok('Voz: si falla el audio, lee la pregunta con la voz del aparato («Turno de los Elefantes. dos más uno…»)', hablado.length >= 1 && /Turno de los Elefantes/.test(hablado[0]) && /más/.test(hablado[0]), hablado[0]);
+      c.voz = false; hablado.length = 0; aud.length = 0; clic(P, '[data-act=oir]');
+      return esp(500);
+    }).then(function () {
+      ok('Voz apagada (🗣️): no suena nada', aud.length === 0 && hablado.length === 0);
+      /* misión: la primera parada también es «Primeros pasos» */
+      clic(P, '[data-p=inicio]'); clic(P, '[data-p=cfgmis]'); clic(P, '[data-act=empezarMis]');
+      var m = L.estado.g; ok('Misión: arranca en «Primeros pasos» (suma ≤ 3) con 5 teclas', m.p.nivel === 0 && m.p.sum <= 3 && d.querySelectorAll('#teclado button').length === 5);
+      clic(P, '[data-p=inicio]'); clic(P, '[data-p=cfgcamp]');
+      ok('Ajustes: el nivel «Hasta 3» y «Va subiendo (empieza fácil)» se pueden elegir', /Hasta 3/.test(d.body.textContent) && /empieza fácil/.test(d.body.textContent));
+      ok('Sin errores de JavaScript en la sesión de voz', P.errs.length === 0, P.errs.join(' | '));
+    });
+  });
+}
+
 abre().then(function (P) {
   var L = P.w.SumaSafari, w = P.w, d = P.d;
   /* ---------- lógica ---------- */
   var rngs = (function () { var s = 7; return function () { s = (s * 16807) % 2147483647; return s / 2147483647; }; })();
-  var bien = true, N = 300, i, p;
-  for (i = 0; i < N; i++) { var niv = 1 + (i % 3); p = L.genProblema(niv, null, rngs); if (p.a < 1 || p.b < 1 || p.a + p.b !== p.sum || p.sum < L.NIVELES[niv].min || p.sum > L.NIVELES[niv].max) bien = false; }
-  ok('genProblema: 300 problemas, sumandos ≥ 1 y suma dentro del nivel (hasta 5, 7 y 10)', bien);
-  var us = {}, ds = {}; for (i = 0; i < 6; i++) { p = L.genProblema(1, us, rngs); ds[p.a + '+' + p.b] = 1; }
-  ok('genProblema: no repite hasta agotar las sumas del nivel 1 (hay 10 combinaciones)', Object.keys(ds).length === 6);
+  var bien = true, N = 400, i, p;
+  for (i = 0; i < N; i++) { var niv = i % 4; p = L.genProblema(niv, null, rngs); if (p.a < 1 || p.b < 1 || p.a + p.b !== p.sum || p.sum < L.NIVELES[niv].min || p.sum > L.NIVELES[niv].max) bien = false; }
+  ok('genProblema: 400 problemas, sumandos ≥ 1 y suma dentro del nivel (hasta 3, 5, 7 y 10)', bien);
+  var us = {}, ds = {}; for (i = 0; i < 3; i++) { p = L.genProblema(0, us, rngs); ds[p.a + '+' + p.b] = 1; }
+  ok('genProblema: «Primeros pasos» solo tiene 1+1, 1+2 y 2+1, sin repetir', Object.keys(ds).length === 3 && Object.keys(ds).sort().join() === '1+1,1+2,2+1', Object.keys(ds).join());
   var ron = L.genRonda(2, 4, 0, rngs);
   ok('genRonda: los 4 equipos tienen la MISMA suma, y repartida de formas distintas', ron.every(function (x) { return x.sum === ron[0].sum && x.a + x.b === x.sum; }) && new Set(ron.map(function (x) { return x.a; })).size === Math.min(4, ron[0].sum - 1), JSON.stringify(ron.map(function (x) { return x.a + '+' + x.b; })));
   var evita = true; for (i = 0; i < 40; i++) { if (L.genRonda(3, 2, 8, rngs)[0].sum === 8) evita = false; } ok('genRonda: no repite la suma de la ronda anterior', evita);
   ok('puntos: sin pista 3, con 1 o 2 pistas 2, con 3 o más 1', L.puntos(0) === 3 && L.puntos(1) === 2 && L.puntos(2) === 2 && L.puntos(3) === 1 && L.puntos(5) === 1);
-  ok('nivelRonda (5 rondas): 1,1,2,2,3 — y nunca pasa de 3', [0, 1, 2, 3, 4].map(function (r) { return L.nivelRonda(r, 5); }).join() === '1,1,2,2,3' && L.nivelRonda(7, 8) === 3);
-  ok('nivelParada: 4 paradas por nivel', [0, 3, 4, 7, 8, 11].map(L.nivelParada).join() === '1,1,2,2,3,3');
+  ok('nivelRonda (5 rondas): empieza fácil, 0,0,1,2,3 — y nunca pasa de 3', [0, 1, 2, 3, 4].map(function (r) { return L.nivelRonda(r, 5); }).join() === '0,0,1,2,3' && L.nivelRonda(7, 8) === 3 && L.nivelRonda(0, 3) === 0);
+  ok('nivelParada: 3 paradas por nivel (0,0,0,1,1,1,2,2,2,3,3,3)', [0, 2, 3, 5, 6, 8, 9, 11].map(L.nivelParada).join() === '0,0,1,1,2,2,3,3');
   var rk = L.ranking([{ pts: 10, aciertos: 5 }, { pts: 12, aciertos: 4 }, { pts: 10, aciertos: 5 }, { pts: 3, aciertos: 1 }]).map(function (x) { return x.puesto; });
   ok('ranking: empates comparten puesto (1,2,2,4)', rk.join() === '1,2,2,4', rk.join());
   ok('estrellasMision: 3 estrellas con ≥ 75 %, 2 con ≥ 50 %, 1 en otro caso', L.estrellasMision(9, 12) === 3 && L.estrellasMision(6, 12) === 2 && L.estrellasMision(1, 12) === 1);
@@ -38,6 +89,8 @@ abre().then(function (P) {
 
   /* Aprendemos juntos */
   clic(P, '[data-p=aprende]');
+  ok('Aprende: empieza fácil, con 2 + 1', txt(P, '.num .a') === '2' && txt(P, '.num .b') === '1' && txt(P, '.res') === '3');
+  clic(P, '[data-act=da][data-w=a][data-d="1"]'); clic(P, '[data-act=da][data-w=b][data-d="1"]');
   ok('Aprende: 5 representaciones (contar, dedos, marco, recta, palitos)', d.querySelectorAll('.repcard').length === 5 && ['contar', 'dedos', 'marco', 'recta', 'palitos'].every(function (k) { return d.querySelector('.rep[data-rep=' + k + ']'); }));
   ok('Aprende 3+2: marco de 10 con 3 casillas rojas y 2 azules; faltan 5', d.querySelectorAll('.marco i.g1').length === 3 && d.querySelectorAll('.marco i.g2').length === 2 && /faltan 5/.test(txt(P, '.falta')));
   ok('Aprende 3+2: dedos = el mayor (3) en la cabeza y 2 dedos levantados con 4 y 5', txt(P, '.bub b') === '3' && d.querySelectorAll('.mano .f.st').length === 2 && d.querySelector('.mano .f.st:last-of-type b, .mano .f.st:nth-child(2) b').textContent === '5');
@@ -64,7 +117,7 @@ abre().then(function (P) {
     w.SumaSafari.estado.cfg.sonido = false; w.SumaSafari.estado.cfg.voz = false;
     clic(P, '[data-act=empezarCamp]');
     var g = w.SumaSafari.estado.g;
-    ok('Campeonato: 3 equipos en el marcador, turno del primero, 10 teclas (1–10)', d.querySelectorAll('.marcador .eq').length === 3 && d.querySelector('.eq.act') && /Leones/.test(txt(P, '.turno')) && d.querySelectorAll('#teclado button').length === 10);
+    ok('Campeonato: 3 equipos en el marcador, turno del primero, 5 teclas (1–5) en el nivel 1', d.querySelectorAll('.marcador .eq').length === 3 && d.querySelector('.eq.act') && /Leones/.test(txt(P, '.turno')) && d.querySelectorAll('#teclado button').length === 5, 'en el nivel 1 solo 5 teclas');
     ok('Campeonato: en el nivel 1 (apoyo «se va quitando») salen los dibujos y la suma con ❓', d.querySelectorAll('.pregunta .it').length === g.p.a + g.p.b && txt(P, '#int') === '❓');
     /* equipo 1: acierta a la primera sin pistas → 3 ⭐ */
     clic(P, '#teclado button[data-n="' + g.p.sum + '"]');
@@ -106,7 +159,7 @@ abre().then(function (P) {
         if (k === 1) { var mal2 = m.p.sum === 10 ? 9 : m.p.sum + 1; clic(P, '#teclado button[data-n="' + mal2 + '"]'); }  /* una parada con fallo: no da estrella pero avanza */
         clic(P, '#teclado button[data-n="' + m.p.sum + '"]'); clic(P, '[data-act=sig]');
       }
-      ok('Misión: niveles 1,1,1,1,2,2,2,2,3,3,3,3 (la dificultad sube a lo largo del camino)', niveles.join() === '1,1,1,1,2,2,2,2,3,3,3,3', niveles.join());
+      ok('Misión: niveles 0,0,0,1,1,1,2,2,2,3,3,3 (empieza fácil y sube a lo largo del camino)', niveles.join() === '0,0,0,1,1,1,2,2,2,3,3,3', niveles.join());
       ok('Misión: al acabar sale «Hemos llegado», 11 de 12 sin ayuda y 3 estrellas', w.SumaSafari.estado.p === 'finmis' && /11 de 12/.test(d.body.textContent) && (d.querySelector('.estr').textContent.match(/⭐/g) || []).length === 3);
       /* ---------- Sin pistas ---------- */
       clic(P, '[data-p=inicio]'); clic(P, '[data-p=cfgcamp]'); clic(P, '[data-k=pistas][data-v="false"]'); clic(P, '[data-k=ayuda][data-v="false"]'); w.SumaSafari.estado.cfg.sonido = false; w.SumaSafari.estado.cfg.voz = false; clic(P, '[data-act=empezarCamp]');
@@ -117,7 +170,7 @@ abre().then(function (P) {
       clic(P, '[data-act=sig]'); var g4 = w.SumaSafari.estado.g; var tecla = g4.p.sum === 10 ? '0' : String(g4.p.sum);
       d.dispatchEvent(new w.KeyboardEvent('keydown', { key: tecla, bubbles: true })); ok('Teclado: la tecla del número responde', g4.resuelto === true);
       ok('Sin errores de JavaScript en toda la sesión', P.errs.length === 0, P.errs.join(' | '));
-      console.log(fallos ? '\nHAY ' + fallos + ' FALLOS' : '\nTodo bien'); process.exit(fallos ? 1 : 0);
+      return extra().then(function () { console.log(fallos ? '\nHAY ' + fallos + ' FALLOS' : '\nTodo bien'); process.exit(fallos ? 1 : 0); });
     });
   });
 }).catch(function (e) { console.log('FALLO  ' + (e && e.stack || e)); process.exit(1); });
