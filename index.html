@@ -381,12 +381,12 @@ function confeti(n) {
 }
 /* Pictogramas propios de Fönia (carpeta pictos/): cada emoji del texto se cambia por su pictograma al pintarlo */
 var EMO = {
-  /* 16/11: los que faltaban, ya hechos por el banco (lote S). Trofeo, apagar y los números 6, 7, 9 y 10 se están rehaciendo: siguen con el más cercano */
-  '🦁': 'leon', '🐘': 'elefante', '🦒': 'jirafa', '🐒': 'mono', '⭐': 'estrella', '🌟': 'estrella', '🎉': 'aplauso', '🏆': 'copa', '🥇': 'medalla',
+  /* 16/11: los que faltaban, ya hechos por el banco (lote S, y los rehechos de 86facd0: trofeo, apagar, 6, 7, 9, 10, esqueleto de la mano) */
+  '🦁': 'leon', '🐘': 'elefante', '🦒': 'jirafa', '🐒': 'mono', '⭐': 'estrella', '🌟': 'estrella', '🎉': 'aplauso', '🏆': 'trofeo', '🥇': 'medalla',
   '💡': 'pista', '🔍': 'mirar', '🤝': 'ayuda', '🖐️': 'mano_abierta', '🙋': 'mano_abierta', '🥢': 'palitos', '🐸': 'rana', '🍎': 'contar',
   '🚙': 'todoterreno', '⛺': 'campamento', '🏠': 'casa', '🦉': 'buho', '🧠': 'cerebro', '🐝': 'abeja', '🎓': 'libro', '🧑‍🏫': 'maestra',
   '🔊': 'altavoz', '🗣️': 'hablar', '🔈': 'escuchar', '🎲': 'dado', '🔁': 'repetir', '🖨️': 'imprimir', '📋': 'lapiz', '🔥': 'fuego',
-  '⏹': 'parar', '📷': 'camara', '🤏': 'pinza', '▶': 'jugar', '➜': 'siguiente', '✓': 'bien', '⛶': 'pantalla_completa', '▦': 'marco_de_10', '👁': 'ojo',
+  '⏹': 'apagar', '📷': 'camara', '🤏': 'pinza', '▶': 'jugar', '➜': 'siguiente', '✓': 'bien', '⛶': 'pantalla_completa', '▦': 'marco_de_10', '👁': 'ojo',
   '🐣': 'pollito', '🌴': 'selva', '🌾': 'sabana', '🌋': 'volcan', '📈': 'camino', '🎈': 'globo'
 };
 var EMO_RE = new RegExp('(' + Object.keys(EMO).sort(function (a, b) { return b.length - a.length; }).map(function (k) { return k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('|') + ')\uFE0F?', 'g');

@@ -1,14 +1,8 @@
-# Pictogramas que faltan en el banco para «Safari de las Sumas»
+# Pictogramas del banco para «Safari de las Sumas»
 
-El 16/11 el banco hizo 32 pictos (lote S). 25 ya están en `pictos/` y en uso. José pidió rehacer los flojos. Mientras tanto se usa el más cercano:
+Ya no falta ninguno. El 16/11 el banco hizo los 32 del lote S y rehízo los 7 flojos (commit 86facd0 en pictogramas-propios). Todos están en `pictos/`.
 
-| Falta (se está rehaciendo) | Hoy se usa | Para qué |
-|---|---|---|
-| trofeo | copa | campeonato y diploma |
-| números seis, siete, nueve y diez | la cifra en texto | números grandes |
-| esqueleto de la mano | — | «Mis dedos» |
-| apagar | parar | apagar la cámara |
-
-Ya están en `pictos/`, pero todavía no se usan en pantalla: tres, cuatro, mano_3_dedos, mano_4_dedos, diploma y sumar.
-
-Cuando lleguen los rehechos, se cambian en `EMO` (index.html) y se borran de esta lista.
+Están en `pictos/` pero todavía no salen en pantalla, porque las cifras grandes van como texto y «Mis dedos» dibuja su propia mano:
+- tres, cuatro, seis, siete, nueve, diez;
+- mano_3_dedos, mano_4_dedos, esqueleto_de_la_mano;
+- diploma, sumar.
